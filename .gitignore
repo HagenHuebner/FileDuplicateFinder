@@ -1,7 +1,5 @@
 .editorconfig
 TestResults/
-FindDuplicates/obj/
-FindDuplicates/bin/
 FindDuplicatesTest/FindDuplicatesTest/bin
 FindDuplicatesTest/FindDuplicatesTest/obj
 .vs/
