@@ -6,30 +6,63 @@
         xmlns:local="clr-namespace:Gui"
         mc:Ignorable="d"
         FontSize="14"
-        Title="Find file duplicates" Height="450" Width="800">
+        Title="Find file duplicates" Height="800" Width="800">
     <Grid Margin="10,10,10,10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*" MaxWidth="100"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" MaxHeight="30"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0">
-            Folders to search:
-        </TextBlock>
+        <TextBlock Grid.Column="0" Grid.Row="0" Text="Search duplicate files in these directories:"/>
         <Grid Grid.Column="1" Grid.Row="1" Margin="5,5,5,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="70"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Grid.Column="0" x:Name="AddButton" Click="AddButton_Click">Add</Button>
-            <Button Grid.Row="1" Grid.Column="0" x:Name="RemoveButton" Click="RemoveButton_Click">Remove</Button>
+            <Button Grid.Row="2" Grid.Column="0" x:Name="RemoveButton" Click="RemoveButton_Click">Remove</Button>
         </Grid>
         <ListBox x:Name="FoldersToSearchList" Grid.Column="0" Grid.Row="1" SelectionChanged="FoldersToSearchList_SelectionChanged"></ListBox>
+
+        <Grid Grid.Row="2" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock>Min.Size:</TextBlock>
+            <TextBox Grid.Row="0" Grid.Column="1"></TextBox>
+            <ComboBox Grid.Row="0" Grid.Column="2" x:Name="SizeUnitSelection" SelectionChanged="SizeUnitSelection_SelectionChanged">
+                <ComboBoxItem>B</ComboBoxItem>
+                <ComboBoxItem>kB</ComboBoxItem>
+                <ComboBoxItem>MB</ComboBoxItem>
+            </ComboBox>
+        </Grid>
+        <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,10,0,0">Duplicates:</TextBlock>
+        <ListBox Grid.Row="4" Grid.Column="0" ></ListBox>
+        <Grid Grid.Column="1" Grid.Row="4" Margin="5,5,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="70"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" x:Name="StartButton" Click="StartButton_Click">Start</Button>
+            <Button Grid.Row="2" Grid.Column="0" x:Name="StopButton" Click="StopButton_Click">Stop</Button>
+        </Grid>
     </Grid>
 </Window>
