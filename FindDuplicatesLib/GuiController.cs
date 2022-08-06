@@ -8,9 +8,14 @@ namespace FindDuplicates
 {
     public class GuiController
     {
-        public bool IsRunning()
+        public bool AllowStart() 
         {
-            return currentDir_ != null;
+            return currentDir_ == null;
+        }
+
+        public bool AllowStop() 
+        {
+            return currentDir_ != null && !currentDir_.stopRequested;
         }
 
         public void Stop() 
@@ -18,7 +23,7 @@ namespace FindDuplicates
             if (currentDir_ != null) 
             {
                 currentDir_.stopRequested = true;
-                StatusListener("Aborting...");
+                StatusListener("Stopping search, this may take a few minutes.");
             }
         }
 
@@ -37,21 +42,24 @@ namespace FindDuplicates
             currentDir_ = new BaseDirectory(PathProvider());
             currentDir_.minSize = minFileSize;
             multiples_ = null;
-            try
-            {
-                new Thread(() =>
-                {
-                    Thread.CurrentThread.IsBackground = true;
-                    currentDir_.statusUpdater = StatusListener;
-                    multiples_ = currentDir_.Multiples();
-                    Finished();
-                }).Start();
-            }
-            catch (Exception ex)
-            {
-                StatusListener(ex.Message);
-                Finished();
-            }
+
+            var task = new Task(SearchFolders);
+            task.ContinueWith(OnFolderSearchException, TaskContinuationOptions.OnlyOnFaulted);
+            task.Start();
+        }
+
+        private void OnFolderSearchException(Task tsk) 
+        {
+            var ex = tsk.Exception;
+            StatusListener(ex.Message);
+            Finished();
+        }
+
+        private void SearchFolders() 
+        {
+            currentDir_.statusUpdater = StatusListener;
+            multiples_ = currentDir_.Multiples();
+            Finished();
         }
 
         private void Finished() 

@@ -71,8 +71,8 @@ namespace Gui
         private void UpdateGUI() 
         {
             RemoveButton.IsEnabled = FoldersToSearchList.SelectedIndex != -1;
-            StartButton.IsEnabled = !ctrl.IsRunning() && FoldersToSearchList.Items.Count > 0;
-            StopButton.IsEnabled = ctrl.IsRunning();
+            StartButton.IsEnabled = ctrl.AllowStart() && FoldersToSearchList.Items.Count > 0;
+            StopButton.IsEnabled = ctrl.AllowStop();
             UpdateResultList();
         }
 
@@ -163,6 +163,15 @@ namespace Gui
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             UpdateMinFileSize();
+            foreach (var f in FoldersToSearchList.Items) 
+            {
+                if (!System.IO.Directory.Exists(f.ToString())) 
+                {
+                    ShowError(f.ToString() + " does not exist.");
+                    return;
+                }
+            }
+
             ctrl.Start();
             UpdateGUI();
         }
@@ -170,6 +179,7 @@ namespace Gui
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             ctrl.Stop();
+            UpdateGUI();
         }
 
         private void ShowError(string msg) 
