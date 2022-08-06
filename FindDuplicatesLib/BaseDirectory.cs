@@ -151,6 +151,15 @@ namespace FindDuplicates
             }
 
             ShowSummary(ret, toSave);
+            ret.Sort((a, b) =>
+            {
+                if (a.Items.Count == b.Items.Count)
+                    return 0;
+                else if (a.Items.Count > b.Items.Count)
+                    return -1;
+                else
+                    return 1;
+            });
             return ret;
         }
 

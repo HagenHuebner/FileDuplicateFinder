@@ -23,17 +23,6 @@ class Programm
 
         var tuples = bd.Multiples();
 
-        tuples.Sort((a, b) =>
-        {
-            if (a.Items.Count == b.Items.Count)
-                return 0;
-            else if (a.Items.Count > b.Items.Count)
-                return -1;
-            else
-                return 1;
-        });
-
-
         WriteOuput(tuples);
         return 0;
     }
