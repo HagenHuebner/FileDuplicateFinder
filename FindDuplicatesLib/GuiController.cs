@@ -34,11 +34,6 @@ namespace FindDuplicates
 
         public void Start()
         {
-            Run();
-        }
-
-        private void Run()
-        {
             currentDir_ = new BaseDirectory(PathProvider());
             currentDir_.minSize = minFileSize;
             multiples_ = null;
