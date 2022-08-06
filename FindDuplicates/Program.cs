@@ -2,13 +2,13 @@
 
 class Programm
 {
-    private static void WriteOuput(List<List<FileItem>> tuples)
+    private static void WriteOuput(List<DuplicateSet> tuples)
     {
         using StreamWriter file = new(@"C:\dev\filehash\FindDuplicates\output.txt");
         foreach (var entry in tuples)
         {
-            file.WriteLine("----  " + entry.Count + " ----");
-            foreach (var x in entry)
+            file.WriteLine("----  " + entry.Items.Count + " ----");
+            foreach (var x in entry.Items)
                 file.WriteLine(x.FullPath);
         }
     }
@@ -25,9 +25,9 @@ class Programm
 
         tuples.Sort((a, b) =>
         {
-            if (a.Count == b.Count)
+            if (a.Items.Count == b.Items.Count)
                 return 0;
-            else if (a.Count > b.Count)
+            else if (a.Items.Count > b.Items.Count)
                 return -1;
             else
                 return 1;

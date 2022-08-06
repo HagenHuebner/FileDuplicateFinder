@@ -74,11 +74,11 @@ namespace FindDuplicates
             return LengthToFile;
         }
 
-        public List<List<FileItem>> Multiples()
+        public List<DuplicateSet> Multiples()
         {
             var LengthToFile = SameSizeFiles();
             statusUpdater("detecting duplicates");
-            var ret = new List<List<FileItem>>();
+            var ret = new List<DuplicateSet>();
             var candidateCnt = 0;
             long toSave = 0;
             foreach (var x in LengthToFile)
@@ -114,7 +114,7 @@ namespace FindDuplicates
                         dupeList.AddRange(v.Value);
                     }
 
-                    ret.Add(dupeList);
+                    ret.Add(new DuplicateSet(dupeList));
                 }
             }
 
@@ -122,7 +122,7 @@ namespace FindDuplicates
             return ret;
         }
 
-        private void ShowSummary(List<List<FileItem>> result, long toSave)
+        private void ShowSummary(List<DuplicateSet> result, long toSave)
         {
             if (result.Count == 0)
                 statusUpdater("No duplicates found.");
@@ -143,7 +143,7 @@ namespace FindDuplicates
                 var spaceToSave = ((double)toSave) / suffixFactor;
 
                 statusUpdater("Detected " + result.Count + " sets of duplicates with: "
-                    + string.Format("{0:0.###}", spaceToSave) + " " + suffixName + " of redundant space.");
+                    + DuplicateSet.FormatSize(toSave) + " of redundant space.");
             }
         }
 

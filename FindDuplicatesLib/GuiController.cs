@@ -24,7 +24,7 @@ namespace FindDuplicates
             }
         }
 
-        public List<List<FileItem>> Result() 
+        public List<DuplicateSet> Result() 
         {
             return multiples_;
         }
@@ -64,7 +64,7 @@ namespace FindDuplicates
         }
 
         private volatile BaseDirectory currentDir_;
-        private volatile List<List<FileItem>> multiples_;
+        private volatile List<DuplicateSet> multiples_;
         public Action OnFinished;
         public Action<string> StatusListener;
         public Func<List<string>> PathProvider;

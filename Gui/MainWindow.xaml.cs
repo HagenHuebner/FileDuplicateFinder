@@ -18,6 +18,22 @@ namespace Gui
         delegate void StatusUpdateCallBack(string status);
         delegate void UpdateUICallback();
 
+        class Duplicate
+        {
+            public Duplicate(string name, bool isPath) 
+            {
+                Name = name;
+                IsPath = isPath;
+            }
+            public override string ToString()
+            {
+                return Name;
+            }
+
+            public readonly string Name;
+            public readonly bool IsPath;
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -63,13 +79,12 @@ namespace Gui
             var res = ctrl.Result();
             if (res != null)
             {
-                foreach (var list in res)
+                foreach (var set in res)
                 {
-                    var title = "---" + res.Count + "---";
-                    DuplicateList.Items.Add(title);
-                    foreach (var item in list)
+                    DuplicateList.Items.Add(new Duplicate(set.ViewString(), false));
+                    foreach (var item in set.Items)
                     {
-                        DuplicateList.Items.Add(item.FullPath);
+                        DuplicateList.Items.Add(new Duplicate(item.FullPath, true));
                     }
                 }
             }
@@ -118,16 +133,17 @@ namespace Gui
 
         private void DuplicateList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (DuplicateList.SelectedItem != null) 
+            var item = DuplicateList.SelectedItem;
+            var dup = (Duplicate)item;
+            if (dup != null && dup.IsPath) 
             {
-                var path = DuplicateList.SelectedItem.ToString();
                 try
                 {
-                    if (path != null)
+                    if (dup.Name != null)
                     {
                         new Process
                         {
-                            StartInfo = new ProcessStartInfo(path)
+                            StartInfo = new ProcessStartInfo(dup.Name)
                             {
                                 UseShellExecute = true
                             }

@@ -15,7 +15,7 @@ namespace FindDuplicatesTest
         [TestMethod]
         public void TotalNumberOfFiles()
         {
-            var files = BaseDirectory.GetFiles(testFolderPath);
+            var files = new BaseDirectory(new List<string>()).GetFiles(testFolderPath);
             Assert.AreEqual(files.Count(), 5);
             foreach (var f in files)
                 Assert.IsTrue(f.Size() > 0 || f.FullPath.EndsWith("empty.txt"));
@@ -40,11 +40,11 @@ namespace FindDuplicatesTest
             var mul = db.Multiples();
             Assert.AreEqual(mul.Count, 1);
             var first = mul[0];
-            Assert.AreEqual(first.Count, 3);
-            Assert.IsTrue(first.Any(x => x.FullPath.EndsWith("a.txt")));
-            Assert.IsTrue(first.Any(x => x.FullPath.EndsWith("copyOfa.txt") && !x.FullPath.Contains("subdir")));
-            Assert.IsTrue(first.Any(x => x.FullPath.EndsWith("copyOfa.txt") && x.FullPath.Contains("subdir")));
-            Assert.IsFalse(first.Any(x => x.FullPath.EndsWith("b.txt")));
+            Assert.AreEqual(first.Items.Count, 3);
+            Assert.IsTrue(first.Items.Any(x => x.FullPath.EndsWith("a.txt")));
+            Assert.IsTrue(first.Items.Any(x => x.FullPath.EndsWith("copyOfa.txt") && !x.FullPath.Contains("subdir")));
+            Assert.IsTrue(first.Items.Any(x => x.FullPath.EndsWith("copyOfa.txt") && x.FullPath.Contains("subdir")));
+            Assert.IsFalse(first.Items.Any(x => x.FullPath.EndsWith("b.txt")));
         }
 
     }
