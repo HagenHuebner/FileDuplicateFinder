@@ -6,10 +6,16 @@ namespace FindDuplicatesTest
     public class BaseDirectoryTest
     {
         private static readonly string testFolderPath;
+        private static readonly string sameSizeDiffContentPath;
+        private static readonly string sameSizeDiffContentPathSubFolders;
         static BaseDirectoryTest() 
         {
             var executablePath = Directory.GetCurrentDirectory();
             testFolderPath = Path.GetFullPath(Path.Combine(executablePath, "..", "..", "..", "..", "testDir"));
+            sameSizeDiffContentPath = Path.GetFullPath(Path.Combine(executablePath,
+                "..", "..", "..", "..", "TestDirHash"));
+            sameSizeDiffContentPathSubFolders = Path.GetFullPath(Path.Combine(executablePath,
+                "..", "..", "..", "..", "TestDirHashSubFolders"));
         }
 
         [TestMethod]
@@ -64,8 +70,8 @@ namespace FindDuplicatesTest
         [TestMethod]
         public void Multiples() 
         {
-            var db = new BaseDirectory(new List<string> { testFolderPath });
-            var mul = db.Multiples();
+            var bd = new BaseDirectory(new List<string> { testFolderPath });
+            var mul = bd.Multiples();
             Assert.AreEqual(mul.Count, 1);
             var first = mul[0];
             Assert.AreEqual(first.Items.Count, 3);
@@ -75,5 +81,30 @@ namespace FindDuplicatesTest
             Assert.IsFalse(first.Items.Any(x => x.FullPath.EndsWith("b.txt")));
         }
 
+        private void TestSameSizeDifferentContent(BaseDirectory bd) 
+        {
+            var mul = bd.Multiples();
+            Assert.AreEqual(mul.Count, 2);
+            var first = mul[0];
+            Assert.AreEqual(first.Items.Count, 3);
+            Assert.IsTrue(first.Items.All(x => x.FullPath.Contains("asdf")));
+            var sec = mul[1];
+            Assert.AreEqual(sec.Items.Count, 2);
+            Assert.IsTrue(sec.Items.All(x => x.FullPath.Contains("1234")));
+        } 
+
+        [TestMethod]
+        public void MutiplesSameSizeDifferentContent()
+        {
+            var bd = new BaseDirectory(new List<string> { sameSizeDiffContentPath });
+            TestSameSizeDifferentContent(bd);
+        }
+
+        [TestMethod]
+        public void MutiplesSameSizeDifferentContentWithSubFolder()
+        {
+            var bd = new BaseDirectory(new List<string> { sameSizeDiffContentPathSubFolders });
+            TestSameSizeDifferentContent(bd);
+        }
     }
 }

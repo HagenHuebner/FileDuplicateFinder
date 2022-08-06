@@ -123,30 +123,28 @@ namespace FindDuplicates
                     ++candidateCnt;
                     if (candidateCnt % 1000 == 0)
                         statusUpdater(candidateCnt + " candiates");
-                    var hashToFile = new Dictionary<string, List<FileItem>>();
+                    var hashToFileList = new Dictionary<string, List<FileItem>>();
                     foreach (var f in list)
                     {
                         var h = f.FileHash();
-                        if (hashToFile.ContainsKey(h))
-                            hashToFile[h].Add(f);
+                        if (hashToFileList.ContainsKey(h))
+                            hashToFileList[h].Add(f);
                         else
-                            hashToFile[h] = new List<FileItem> { f };
+                            hashToFileList[h] = new List<FileItem> { f };
                     }
-                    var keysWithOne = hashToFile.Keys.Where(k => hashToFile[k].Count <= 1);
+                    var keysWithOne = hashToFileList.Keys.Where(k => hashToFileList[k].Count <= 1);
                     foreach (var k in keysWithOne)
-                        hashToFile.Remove(k);
+                        hashToFileList.Remove(k);
 
-                    if (hashToFile.Count == 0)
+                    if (hashToFileList.Count == 0)
                         continue;
 
-                    var dupeList = new List<FileItem>();
-                    foreach (var v in hashToFile)
+                    foreach (var k in hashToFileList.Keys)
                     {
-                        toSave += (v.Value.Count - 1) * v.Value[0].Size();
-                        dupeList.AddRange(v.Value);
+                        var lst = hashToFileList[k];
+                        toSave += (lst.Count - 1) * lst[0].Size();
+                        ret.Add(new DuplicateSet(lst));
                     }
-
-                    ret.Add(new DuplicateSet(dupeList));
                 }
             }
 
