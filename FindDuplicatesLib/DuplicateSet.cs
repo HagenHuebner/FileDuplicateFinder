@@ -17,7 +17,7 @@ namespace FindDuplicates
 
         public string ViewString() 
         {
-            return "--- " + Items.Count + " total: " + FormatSize(TotalSize()) + " each: " + FormatSize(Items[0].Size());
+            return Items.Count + " files, each: " + FormatSize(Items[0].Size()) + " , total: " + FormatSize(TotalSize());
         }
 
         public static string FormatSize(long toSave) 

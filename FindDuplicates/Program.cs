@@ -18,7 +18,7 @@ class Programm
         var bd = new BaseDirectory(new List<string> { @"C:\dev\filehash\FindDuplicates\FindDuplicatesTest\testDir" })
         {
             statusUpdater = s => { Console.WriteLine(s); },
-            filter = f => f.Size() > 1024 * 1024
+            minSize = 1024 * 1024
         };
 
         var tuples = bd.Multiples();

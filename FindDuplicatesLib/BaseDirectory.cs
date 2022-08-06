@@ -59,7 +59,7 @@ namespace FindDuplicates
                 if (totalFileCnt % 1000 == 0 || relevantFileCnt % 1000 == 0)
                     statusUpdater("total files: "+ totalFileCnt + " relevant: " + relevantFileCnt);
 
-                if (!filter(f))
+                if (!Filter(f))
                     continue;
 
                 ++relevantFileCnt;
@@ -72,6 +72,11 @@ namespace FindDuplicates
 
             statusUpdater("Found " + totalFileCnt + " files of which " + relevantFileCnt + " are relevant.");
             return LengthToFile;
+        }
+
+        private bool Filter(FileItem f) 
+        {
+            return f.Size() >= minSize;
         }
 
         public List<DuplicateSet> Multiples()
@@ -128,27 +133,13 @@ namespace FindDuplicates
                 statusUpdater("No duplicates found.");
             else 
             {
-                var suffixFactor = 1.0;
-                var suffixName = "Bytes";
-                if (toSave > 1024 * 1024)
-                {
-                    suffixFactor = 1024.0 * 1024.0;
-                    suffixName = "MBytes";
-                }
-                else if (toSave > 1024)
-                {
-                    suffixFactor = 1024.0;
-                    suffixName = "KBytes";
-                }
-                var spaceToSave = ((double)toSave) / suffixFactor;
-
                 statusUpdater("Detected " + result.Count + " sets of duplicates with: "
                     + DuplicateSet.FormatSize(toSave) + " of redundant space.");
             }
         }
 
         public Action<string> statusUpdater = s => { };
-        public Func<FileItem, bool> filter = i => { return true; };
+        public long minSize = 0;
         private readonly List<string> paths;
         public volatile bool stopRequested = false;
     }

@@ -18,19 +18,19 @@ namespace Gui
         delegate void StatusUpdateCallBack(string status);
         delegate void UpdateUICallback();
 
-        class Duplicate
+        class DuplicateEntry
         {
-            public Duplicate(string name, bool isPath) 
+            public DuplicateEntry(string name, bool isPath) 
             {
-                Name = name;
+                Text = name;
                 IsPath = isPath;
             }
             public override string ToString()
             {
-                return Name;
+                return Text;
             }
 
-            public readonly string Name;
+            public readonly string Text;
             public readonly bool IsPath;
         }
 
@@ -81,11 +81,9 @@ namespace Gui
             {
                 foreach (var set in res)
                 {
-                    DuplicateList.Items.Add(new Duplicate(set.ViewString(), false));
+                    DuplicateList.Items.Add(new DuplicateEntry(set.ViewString(), false));
                     foreach (var item in set.Items)
-                    {
-                        DuplicateList.Items.Add(new Duplicate(item.FullPath, true));
-                    }
+                        DuplicateList.Items.Add(new DuplicateEntry(item.FullPath, true));
                 }
             }
             else
@@ -134,16 +132,16 @@ namespace Gui
         private void DuplicateList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var item = DuplicateList.SelectedItem;
-            var dup = (Duplicate)item;
+            var dup = (DuplicateEntry)item;
             if (dup != null && dup.IsPath) 
             {
                 try
                 {
-                    if (dup.Name != null)
+                    if (dup.Text != null)
                     {
                         new Process
                         {
-                            StartInfo = new ProcessStartInfo(dup.Name)
+                            StartInfo = new ProcessStartInfo(dup.Text)
                             {
                                 UseShellExecute = true
                             }
