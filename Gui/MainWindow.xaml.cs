@@ -6,6 +6,7 @@ using FindDuplicates;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System;
+using System.Linq;
 
 namespace Gui
 {
@@ -77,18 +78,17 @@ namespace Gui
 
         private void UpdateResultList() 
         {
+            DuplicateList.Items.Clear();
             var res = ctrl.Result();
             if (res != null)
             {
                 foreach (var set in res)
                 {
-                    DuplicateList.Items.Add(new DuplicateEntry(set.ViewString(), false));
+                    DuplicateList.Items.Add(new DuplicateEntry("--- " + set.ViewString(), false));
                     foreach (var item in set.Items)
                         DuplicateList.Items.Add(new DuplicateEntry(item.FullPath, true));
                 }
             }
-            else
-                DuplicateList.Items.Clear();
         }
 
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
@@ -96,6 +96,27 @@ namespace Gui
             var si = FoldersToSearchList.SelectedIndex;
             if(si != -1)
                 FoldersToSearchList.Items.RemoveAt(si);
+        }
+
+        private void AddFoldersIfNew(string[] newFolders) 
+        {
+            var current = new List<string>();
+            current.AddRange(FoldersToSearchList.Items.OfType<string>());
+            var notAdded = new List<string>();
+            foreach (var f in newFolders) 
+            {
+                if(!current.Any(x => f.StartsWith(x) || x.StartsWith(f)))
+                    FoldersToSearchList.Items.Add(f);
+                else
+                    notAdded.Add(f);
+            }
+
+            if (notAdded.Count > 0) 
+            {
+                var list = notAdded.Aggregate((a, b) => a + ",\n" + b);
+                ShowError("The following folders where not added:\n" + list +
+                    "\nbecause they contain previously added folders or vice versa.");
+            }
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -108,8 +129,7 @@ namespace Gui
             };
             if (dialog.ShowDialog(this).GetValueOrDefault())
             {
-                foreach (var p in dialog.SelectedPaths)
-                    FoldersToSearchList.Items.Add(p);
+                AddFoldersIfNew(dialog.SelectedPaths);
             }
             UpdateGUI();
         }
@@ -118,7 +138,6 @@ namespace Gui
         {
             UpdateGUI();
         }
-
 
         private long FileSizeMultiplier() 
         {
@@ -131,13 +150,12 @@ namespace Gui
             };
         }
 
-
         private void UpdateMinFileSize() 
         {
             long size;
             if (!long.TryParse(MinFileSizeEntry.Text, out size)) 
             {
-                MessageBox.Show("Enter a whole number for the minimul file size.");
+                ShowError("Enter a whole number for the minimul file size.");
             }
             ctrl.minFileSize = size * FileSizeMultiplier();
         }
@@ -152,6 +170,11 @@ namespace Gui
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             ctrl.Stop();
+        }
+
+        private void ShowError(string msg) 
+        {
+            MessageBox.Show(msg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void DuplicateList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -175,7 +198,7 @@ namespace Gui
                 }
                 catch (Exception ex) 
                 {
-                    MessageBox.Show(ex.Message);
+                    ShowError(ex.Message);
                 }
             }
         }
