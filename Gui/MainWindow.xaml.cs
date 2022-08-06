@@ -72,15 +72,21 @@ namespace Gui
 
         private void UpdateDeleteButtonState() 
         {
-            DeleteButton.IsEnabled = DuplicateList.SelectedIndex != -1 && ((DuplicateEntry) DuplicateList.SelectedItem).IsPath;
+            DeleteButton.IsEnabled = DuplicateList.SelectedIndex != -1 &&
+                ((DuplicateEntry) DuplicateList.SelectedItem).IsPath;
         }
 
-        private void UpdateGUI() 
+        private void UpdateButtonStates() 
         {
             RemoveButton.IsEnabled = FoldersToSearchList.SelectedIndex != -1;
             StartButton.IsEnabled = ctrl.AllowStart() && FoldersToSearchList.Items.Count > 0;
             StopButton.IsEnabled = ctrl.AllowStop();
             UpdateDeleteButtonState();
+        }
+
+        private void UpdateGUI() 
+        {
+            UpdateButtonStates();
             UpdateResultList();
         }
 
@@ -139,12 +145,12 @@ namespace Gui
             {
                 AddFoldersIfNew(dialog.SelectedPaths);
             }
-            UpdateGUI();
+            UpdateButtonStates();
         }
 
         private void FoldersToSearchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UpdateGUI();
+            UpdateButtonStates();
         }
 
         private long FileSizeMultiplier() 
@@ -238,7 +244,11 @@ namespace Gui
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = ((DuplicateEntry)DuplicateList.SelectedItem).Text;
+            var selObj = DuplicateList.SelectedItem;
+            if (selObj == null)
+                return;
+
+            var path = ((DuplicateEntry)selObj).Text;
             if (!File.Exists(path)) 
             {
                 ShowError(path + " does not exist");
@@ -257,6 +267,7 @@ namespace Gui
             try
             {
                 File.Delete(path);
+                DuplicateList.Items.Remove(selObj);
             }
             catch (Exception ex) 
             {
