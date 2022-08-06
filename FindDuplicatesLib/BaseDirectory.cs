@@ -7,6 +7,33 @@ namespace FindDuplicates
 {
     public class BaseDirectory
     {
+        public static bool PathsShareDirectory(string pathA, string pathsB) 
+        {
+            var aParts = pathA.Split(Path.DirectorySeparatorChar);
+            var bParts = pathsB.Split(Path.DirectorySeparatorChar);
+
+            string[] longer;
+            string[] shorter;
+            if (aParts.Length < bParts.Length)
+            {
+                shorter = aParts;
+                longer = bParts;
+            }
+            else
+            {
+                shorter = bParts;
+                longer = aParts;
+            }
+
+            for (var i = 0; i < shorter.Length; ++i) 
+            {
+                if (shorter[i] != longer[i])
+                    return false;
+            }
+
+            return true;
+        }
+
         public IEnumerable<FileItem> GetFiles(string path)
         {
             var queue = new Queue<string>();

@@ -22,6 +22,34 @@ namespace FindDuplicatesTest
         }
 
         [TestMethod]
+        public void PathsShareDirSubdir() 
+        {
+            Assert.IsTrue(BaseDirectory.PathsShareDirectory(@"C:\asdf", @"C:\asdf\sub"));
+            Assert.IsTrue(BaseDirectory.PathsShareDirectory(@"C:\asdf\sub", @"C:\asdf"));
+        }
+
+        [TestMethod]
+        public void PathsShareDirSameDir() 
+        {
+            Assert.IsTrue(BaseDirectory.PathsShareDirectory(@"C:\asdf\sub", @"C:\asdf\sub"));
+        }
+
+        [TestMethod]
+        public void PathsShareDirDifferentSubDir() 
+        {
+            Assert.IsFalse(BaseDirectory.PathsShareDirectory(@"C:\asdf\sub", @"C:\asdf\subDir"));
+            Assert.IsFalse(BaseDirectory.PathsShareDirectory(@"C:\asdf\subDir", @"C:\asdf\sub"));
+        }
+
+        [TestMethod]
+        public void PathsShareDirDifferentDifferentMiddle() 
+        {
+            Assert.IsFalse(BaseDirectory.PathsShareDirectory(@"C:\asdf\mid\sub", @"C:\asdf\tit\sub"));
+            Assert.IsFalse(BaseDirectory.PathsShareDirectory(@"C:\asdf\tit\sub", @"C:\asdf\mid\sub"));
+        }
+
+
+        [TestMethod]
         public void FindsFilesWithEqualSizes() 
         {
             var bd = new BaseDirectory(new List<string> { testFolderPath });

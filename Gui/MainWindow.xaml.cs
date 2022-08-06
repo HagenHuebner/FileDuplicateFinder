@@ -105,7 +105,7 @@ namespace Gui
             var notAdded = new List<string>();
             foreach (var f in newFolders) 
             {
-                if(!current.Any(x => f.StartsWith(x) || x.StartsWith(f)))
+                if(!current.Any(x => BaseDirectory.PathsShareDirectory(x, f)))
                     FoldersToSearchList.Items.Add(f);
                 else
                     notAdded.Add(f);
