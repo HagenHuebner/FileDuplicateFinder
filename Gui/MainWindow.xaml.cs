@@ -14,11 +14,11 @@ namespace Gui
     {
         private GuiController ctrl;
         delegate void StatusUpdateCallBack(string status);
+        delegate void UpdateUICallback();
 
         public MainWindow()
         {
             InitializeComponent();
-            UpdateButtonState();
             ctrl = new GuiController();
             ctrl.PathProvider = () => {
                 var ret = new List<string>();
@@ -31,11 +31,16 @@ namespace Gui
 
                 return ret;
             };
+            ctrl.OnFinished = () =>
+            {
+                Dispatcher.BeginInvoke(new UpdateUICallback(UpdateGUI));
+            };
             ctrl.StatusListener = (string txt) =>
             {
                 StatusText.Dispatcher.BeginInvoke(new StatusUpdateCallBack(UpdateStatusText), new object[] { txt });
             };
             SizeUnitSelection.SelectedIndex = 1;
+            UpdateGUI();
         }
 
         private void UpdateStatusText(string txt) 
@@ -43,9 +48,31 @@ namespace Gui
             StatusText.Text = txt;
         }
 
-        private void UpdateButtonState() 
+        private void UpdateGUI() 
         {
             RemoveButton.IsEnabled = FoldersToSearchList.SelectedIndex != -1;
+            StartButton.IsEnabled = !ctrl.IsRunning() && FoldersToSearchList.Items.Count > 0;
+            StopButton.IsEnabled = ctrl.IsRunning();
+            UpdateResultList();
+        }
+
+        private void UpdateResultList() 
+        {
+            var res = ctrl.Result();
+            if (res != null)
+            {
+                foreach (var list in res)
+                {
+                    var title = "---" + res.Count + "---";
+                    DuplicateList.Items.Add(title);
+                    foreach (var item in list)
+                    {
+                        DuplicateList.Items.Add(item.FullPath);
+                    }
+                }
+            }
+            else
+                DuplicateList.Items.Clear();
         }
 
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
@@ -68,23 +95,23 @@ namespace Gui
                 foreach (var p in dialog.SelectedPaths)
                     FoldersToSearchList.Items.Add(p);
             }
+            UpdateGUI();
         }
 
         private void FoldersToSearchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UpdateButtonState();
+            UpdateGUI();
         }
-
-
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             ctrl.Start();
+            UpdateGUI();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-
+            ctrl.Stop();
         }
     }
 }

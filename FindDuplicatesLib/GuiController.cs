@@ -10,9 +10,23 @@ namespace FindDuplicates
 {
     public class GuiController
     {
-        public bool StartButtonEnabled()
+        public bool IsRunning()
         {
-            return false;
+            return currentDir_ != null;
+        }
+
+        public void Stop() 
+        {
+            if (currentDir_ != null) 
+            {
+                currentDir_.stopRequested = true;
+                StatusListener("Aborting...");
+            }
+        }
+
+        public List<List<FileItem>> Result() 
+        {
+            return multiples_;
         }
 
         public void Start()
@@ -22,20 +36,36 @@ namespace FindDuplicates
 
         private void Run()
         {
-            new Thread(() =>
+            currentDir_ = new BaseDirectory(PathProvider());
+            multiples_ = null;
+            try
             {
-                Thread.CurrentThread.IsBackground = true;
-                //var dir = new BaseDirectory(PathProvider());
-                //dir.statusUpdater = StatusListener;
-                //var mults = dir.Multiples();
-
-                StatusListener("called from thread" + Thread.CurrentThread.ToString());
-
-            }).Start();
-
+                new Thread(() =>
+                {
+                    Thread.CurrentThread.IsBackground = true;
+                    currentDir_.statusUpdater = StatusListener;
+                    multiples_ = currentDir_.Multiples();
+                    Finished();
+                }).Start();
+            }
+            catch (Exception ex)
+            {
+                StatusListener(ex.Message);
+                Finished();
+            }
         }
 
+        private void Finished() 
+        {
+            if (currentDir_.stopRequested)
+                StatusListener("aborted");
+            currentDir_ = null;
+            OnFinished();
+        }
 
+        private volatile BaseDirectory currentDir_;
+        private volatile List<List<FileItem>> multiples_;
+        public Action OnFinished;
         public Action<string> StatusListener;
         public Func<List<string>> PathProvider;
     }

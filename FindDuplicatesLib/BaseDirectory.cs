@@ -7,17 +7,17 @@ namespace FindDuplicates
 {
     public class BaseDirectory
     {
-        public static IEnumerable<FileItem> GetFiles(string path)
+        public IEnumerable<FileItem> GetFiles(string path)
         {
             var queue = new Queue<string>();
             queue.Enqueue(path);
-            while (queue.Count > 0)
+            while (queue.Count > 0 && !stopRequested)
             {
                 path = queue.Dequeue();
                 foreach (string subDir in Directory.GetDirectories(path))
                     queue.Enqueue(subDir);
 
-                string[] files = Directory.GetFiles(path); ;
+                string[] files = Directory.GetFiles(path);
                 for (var i = 0; i < files.Length; i++)
                     yield return new FileItem(files[i]);
             }
@@ -29,23 +29,33 @@ namespace FindDuplicates
             paths = pathsToSearch;
         }
 
-        public Dictionary<long, List<FileItem>> SameSizeFiles() 
+        private List<FileItem> ListFilesFromAllDirs() 
         {
             var toSearch = new List<FileItem>();
 
-            foreach (var p in paths) 
+            foreach (var p in paths)
             {
                 statusUpdater("listing directory: " + p);
+                if (stopRequested)
+                    return toSearch;
                 var files = GetFiles(p);
                 toSearch.AddRange(files.ToList());
             }
+
+            return toSearch;
+        }
+
+        public Dictionary<long, List<FileItem>> SameSizeFiles() 
+        {
+            var toSearch = ListFilesFromAllDirs();
             statusUpdater("Comparing file sizes.");
             var LengthToFile = new Dictionary<long, List<FileItem>>();
             var totalFileCnt = 0;
             var relevantFileCnt = 0;
             foreach (var f in toSearch) 
             {
-
+                if (stopRequested)
+                    return LengthToFile;
                 ++totalFileCnt;
                 if (totalFileCnt % 1000 == 0 || relevantFileCnt % 1000 == 0)
                     statusUpdater("total files: "+ totalFileCnt + " relevant: " + relevantFileCnt);
@@ -56,14 +66,9 @@ namespace FindDuplicates
                 ++relevantFileCnt;
                 var size = f.Size();
                 if (LengthToFile.ContainsKey(size))
-                {
                     LengthToFile[size].Add(f);
-                }
                 else 
-                {
                     LengthToFile[size] = new List<FileItem> { f };
-                }
-
             }
 
             statusUpdater("Found " + totalFileCnt + " files of which " + relevantFileCnt + " are relevant.");
@@ -79,6 +84,8 @@ namespace FindDuplicates
             long toSave = 0;
             foreach (var x in LengthToFile) 
             {
+                if (stopRequested)
+                    return ret;
                 var list = x.Value;
                 if (list.Count > 1) 
                 {
@@ -108,7 +115,6 @@ namespace FindDuplicates
                         dupeList.AddRange(v.Value);
                     }
 
-
                     ret.Add(dupeList);
                 }
             }
@@ -127,11 +133,13 @@ namespace FindDuplicates
             }
             var spaceToSave = ((double) toSave) / suffixFactor;
             statusUpdater("detected " + ret.Count + " sets of multiples with: " 
-                + spaceToSave + " " + suffixName + " redundat space.");
+                + spaceToSave + " " + suffixName + " of redundant space.");
             return ret;
         }
+
         public Action<string> statusUpdater = s => { };
         public Func<FileItem, bool> filter = i => { return true; };
         private readonly List<string> paths;
+        public volatile bool stopRequested = false;
     }
 }
