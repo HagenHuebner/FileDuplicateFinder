@@ -133,7 +133,7 @@ namespace FindDuplicates
                 statusUpdater("No duplicates found.");
             else 
             {
-                statusUpdater("Detected " + result.Count + " sets of duplicates with: "
+                statusUpdater("Found " + result.Count + " sets of duplicates with: "
                     + DuplicateSet.FormatSize(toSave) + " of redundant space.");
             }
         }
