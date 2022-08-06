@@ -43,7 +43,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock>Min.Size:</TextBlock>
             <TextBox Grid.Row="0" Grid.Column="1"></TextBox>
-            <ComboBox Grid.Row="0" Grid.Column="2" x:Name="SizeUnitSelection" SelectionChanged="SizeUnitSelection_SelectionChanged">
+            <ComboBox Grid.Row="0" Grid.Column="2" x:Name="SizeUnitSelection">
                 <ComboBoxItem>B</ComboBoxItem>
                 <ComboBoxItem>kB</ComboBoxItem>
                 <ComboBoxItem>MB</ComboBoxItem>
@@ -64,5 +64,6 @@
             <Button Grid.Row="0" Grid.Column="0" x:Name="StartButton" Click="StartButton_Click">Start</Button>
             <Button Grid.Row="2" Grid.Column="0" x:Name="StopButton" Click="StopButton_Click">Stop</Button>
         </Grid>
+        <TextBlock Grid.Row="5" Grid.Column="0" x:Name="StatusText"/>
     </Grid>
 </Window>

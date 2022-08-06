@@ -24,20 +24,26 @@ namespace FindDuplicates
         }
 
 
-        public BaseDirectory(string fullPath) 
+        public BaseDirectory(List<string> pathsToSearch) 
         {
-            FullPath = fullPath;
+            paths = pathsToSearch;
         }
 
         public Dictionary<long, List<FileItem>> SameSizeFiles() 
         {
-            statusUpdater("Processing directory: " + FullPath);
-            
-            var files = GetFiles(FullPath);
+            var toSearch = new List<FileItem>();
+
+            foreach (var p in paths) 
+            {
+                statusUpdater("listing directory: " + p);
+                var files = GetFiles(p);
+                toSearch.AddRange(files.ToList());
+            }
+            statusUpdater("Comparing file sizes.");
             var LengthToFile = new Dictionary<long, List<FileItem>>();
             var totalFileCnt = 0;
             var relevantFileCnt = 0;
-            foreach (var f in files) 
+            foreach (var f in toSearch) 
             {
 
                 ++totalFileCnt;
@@ -126,6 +132,6 @@ namespace FindDuplicates
         }
         public Action<string> statusUpdater = s => { };
         public Func<FileItem, bool> filter = i => { return true; };
-        private readonly string FullPath;
+        private readonly List<string> paths;
     }
 }

@@ -1,5 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Threading;
+
+using FindDuplicates;
+using System.Collections.Generic;
 
 namespace Gui
 {
@@ -8,17 +12,40 @@ namespace Gui
     /// </summary>
     public partial class MainWindow : Window
     {
+        private GuiController ctrl;
+        delegate void StatusUpdateCallBack(string status);
+
         public MainWindow()
         {
             InitializeComponent();
             UpdateButtonState();
+            ctrl = new GuiController();
+            ctrl.PathProvider = () => {
+                var ret = new List<string>();
+                foreach (var i in FoldersToSearchList.Items)
+                {
+                    var s = i.ToString();
+                    if(s != null)
+                        ret.Add(s);
+                }
+
+                return ret;
+            };
+            ctrl.StatusListener = (string txt) =>
+            {
+                StatusText.Dispatcher.BeginInvoke(new StatusUpdateCallBack(UpdateStatusText), new object[] { txt });
+            };
             SizeUnitSelection.SelectedIndex = 1;
+        }
+
+        private void UpdateStatusText(string txt) 
+        {
+            StatusText.Text = txt;
         }
 
         private void UpdateButtonState() 
         {
             RemoveButton.IsEnabled = FoldersToSearchList.SelectedIndex != -1;
-            StopButton.IsEnabled = !StartButton.IsEnabled;
         }
 
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
@@ -48,9 +75,11 @@ namespace Gui
             UpdateButtonState();
         }
 
+
+
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-
+            ctrl.Start();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)

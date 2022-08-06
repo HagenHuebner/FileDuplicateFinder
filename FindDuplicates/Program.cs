@@ -15,7 +15,7 @@ class Programm
 
     public static int Main(string[] args)
     {
-        var bd = new BaseDirectory(@"C:\dev\filehash\FindDuplicates\FindDuplicatesTest\testDir")
+        var bd = new BaseDirectory(new List<string> { @"C:\dev\filehash\FindDuplicates\FindDuplicatesTest\testDir" })
         {
             statusUpdater = s => { Console.WriteLine(s); },
             filter = f => f.Size() > 1024 * 1024

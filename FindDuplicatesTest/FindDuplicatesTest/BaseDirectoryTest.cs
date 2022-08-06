@@ -24,7 +24,7 @@ namespace FindDuplicatesTest
         [TestMethod]
         public void FindsFilesWithEqualSizes() 
         {
-            var bd = new BaseDirectory(testFolderPath);
+            var bd = new BaseDirectory(new List<string> { testFolderPath });
             var sizeToFile = bd.SameSizeFiles();
             var duplicatesAndB = sizeToFile[21];
             Assert.AreEqual(duplicatesAndB.Count, 4);
@@ -36,7 +36,7 @@ namespace FindDuplicatesTest
         [TestMethod]
         public void Multiples() 
         {
-            var db = new BaseDirectory(testFolderPath);
+            var db = new BaseDirectory(new List<string> { testFolderPath });
             var mul = db.Multiples();
             Assert.AreEqual(mul.Count, 1);
             var first = mul[0];
