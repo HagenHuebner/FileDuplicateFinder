@@ -6,6 +6,7 @@ using FindDuplicates;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Gui
@@ -60,6 +61,7 @@ namespace Gui
             };
             MinFileSizeEntry.Text = "0";
             SizeUnitSelection.SelectedIndex = 1;
+            AskBeforeDeleteCheckBox.IsChecked = true;
             UpdateGUI();
         }
 
@@ -68,11 +70,17 @@ namespace Gui
             StatusText.Text = txt;
         }
 
+        private void UpdateDeleteButtonState() 
+        {
+            DeleteButton.IsEnabled = DuplicateList.SelectedIndex != -1 && ((DuplicateEntry) DuplicateList.SelectedItem).IsPath;
+        }
+
         private void UpdateGUI() 
         {
             RemoveButton.IsEnabled = FoldersToSearchList.SelectedIndex != -1;
             StartButton.IsEnabled = ctrl.AllowStart() && FoldersToSearchList.Items.Count > 0;
             StopButton.IsEnabled = ctrl.AllowStop();
+            UpdateDeleteButtonState();
             UpdateResultList();
         }
 
@@ -165,7 +173,7 @@ namespace Gui
             UpdateMinFileSize();
             foreach (var f in FoldersToSearchList.Items) 
             {
-                if (!System.IO.Directory.Exists(f.ToString())) 
+                if (!Directory.Exists(f.ToString())) 
                 {
                     ShowError(f.ToString() + " does not exist.");
                     return;
@@ -185,6 +193,11 @@ namespace Gui
         private void ShowError(string msg) 
         {
             MessageBox.Show(msg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void DuplicateList_SelectionChanged(object sender, SelectionChangedEventArgs e) 
+        {
+            UpdateDeleteButtonState();
         }
 
         private void DuplicateList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -221,6 +234,34 @@ namespace Gui
         private void SizeUnitSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateMinFileSize();
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var path = ((DuplicateEntry)DuplicateList.SelectedItem).Text;
+            if (!File.Exists(path)) 
+            {
+                ShowError(path + " does not exist");
+                return;
+            }
+            
+            var askUser = AskBeforeDeleteCheckBox.IsChecked.GetValueOrDefault(false);
+            if (askUser) 
+            {
+                var res = MessageBox.Show("Delete " + path + " permanently?", "Delete file",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (res != MessageBoxResult.Yes)
+                    return;
+            }
+
+            try
+            {
+                File.Delete(path);
+            }
+            catch (Exception ex) 
+            {
+                ShowError(ex.Message);
+            }
         }
     }
 }
