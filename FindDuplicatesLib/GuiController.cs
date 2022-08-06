@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -37,6 +35,7 @@ namespace FindDuplicates
         private void Run()
         {
             currentDir_ = new BaseDirectory(PathProvider());
+            currentDir_.minSize = minFileSize;
             multiples_ = null;
             try
             {
@@ -65,6 +64,7 @@ namespace FindDuplicates
 
         private volatile BaseDirectory currentDir_;
         private volatile List<DuplicateSet> multiples_;
+        public long minFileSize = 0;
         public Action OnFinished;
         public Action<string> StatusListener;
         public Func<List<string>> PathProvider;

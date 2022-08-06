@@ -57,6 +57,7 @@ namespace Gui
             {
                 StatusText.Dispatcher.BeginInvoke(new StatusUpdateCallBack(UpdateStatusText), new object[] { txt });
             };
+            MinFileSizeEntry.Text = "0";
             SizeUnitSelection.SelectedIndex = 1;
             UpdateGUI();
         }
@@ -118,8 +119,32 @@ namespace Gui
             UpdateGUI();
         }
 
+
+        private long FileSizeMultiplier() 
+        {
+            return SizeUnitSelection.SelectedIndex switch
+            {
+                1 => 1024,
+                2 => 1024 * 1024,
+                3 => 1024 * 1024 * 1024,
+                _ => (long)1,
+            };
+        }
+
+
+        private void UpdateMinFileSize() 
+        {
+            long size;
+            if (!long.TryParse(MinFileSizeEntry.Text, out size)) 
+            {
+                MessageBox.Show("Enter a whole number for the minimul file size.");
+            }
+            ctrl.minFileSize = size * FileSizeMultiplier();
+        }
+
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
+            UpdateMinFileSize();
             ctrl.Start();
             UpdateGUI();
         }
@@ -153,6 +178,16 @@ namespace Gui
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        private void MinFileSizeEntry_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateMinFileSize();
+        }
+
+        private void SizeUnitSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateMinFileSize();
         }
     }
 }
