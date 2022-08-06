@@ -4,6 +4,8 @@ using System.Threading;
 
 using FindDuplicates;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System;
 
 namespace Gui
 {
@@ -112,6 +114,31 @@ namespace Gui
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             ctrl.Stop();
+        }
+
+        private void DuplicateList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (DuplicateList.SelectedItem != null) 
+            {
+                var path = DuplicateList.SelectedItem.ToString();
+                try
+                {
+                    if (path != null)
+                    {
+                        new Process
+                        {
+                            StartInfo = new ProcessStartInfo(path)
+                            {
+                                UseShellExecute = true
+                            }
+                        }.Start();
+                    }
+                }
+                catch (Exception ex) 
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
     }
 }

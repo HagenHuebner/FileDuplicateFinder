@@ -23,7 +23,6 @@ namespace FindDuplicates
             }
         }
 
-
         public BaseDirectory(List<string> pathsToSearch) 
         {
             paths = pathsToSearch;
@@ -75,30 +74,30 @@ namespace FindDuplicates
             return LengthToFile;
         }
 
-        public List<List<FileItem>> Multiples() 
+        public List<List<FileItem>> Multiples()
         {
             var LengthToFile = SameSizeFiles();
-            statusUpdater("detecting multiples");
+            statusUpdater("detecting duplicates");
             var ret = new List<List<FileItem>>();
             var candidateCnt = 0;
             long toSave = 0;
-            foreach (var x in LengthToFile) 
+            foreach (var x in LengthToFile)
             {
                 if (stopRequested)
                     return ret;
                 var list = x.Value;
-                if (list.Count > 1) 
+                if (list.Count > 1)
                 {
                     ++candidateCnt;
                     if (candidateCnt % 1000 == 0)
                         statusUpdater(candidateCnt + " candiates");
                     var hashToFile = new Dictionary<string, List<FileItem>>();
-                    foreach (var f in list) 
+                    foreach (var f in list)
                     {
                         var h = f.FileHash();
                         if (hashToFile.ContainsKey(h))
                             hashToFile[h].Add(f);
-                        else 
+                        else
                             hashToFile[h] = new List<FileItem> { f };
                     }
                     var keysWithOne = hashToFile.Keys.Where(k => hashToFile[k].Count <= 1);
@@ -109,7 +108,7 @@ namespace FindDuplicates
                         continue;
 
                     var dupeList = new List<FileItem>();
-                    foreach (var v in hashToFile) 
+                    foreach (var v in hashToFile)
                     {
                         toSave += (v.Value.Count - 1) * v.Value[0].Size();
                         dupeList.AddRange(v.Value);
@@ -119,22 +118,33 @@ namespace FindDuplicates
                 }
             }
 
-            var suffixFactor = 1.0;
-            var suffixName = "Bytes";
-            if (toSave > 1024 * 1024)
-            {
-                suffixFactor = 1024.0 * 1024.0;
-                suffixName = "MBytes";
-            }
-            else if (toSave > 1024) 
-            {
-                suffixFactor = 1024.0;
-                suffixName = "KBytes";
-            }
-            var spaceToSave = ((double) toSave) / suffixFactor;
-            statusUpdater("detected " + ret.Count + " sets of multiples with: " 
-                + spaceToSave + " " + suffixName + " of redundant space.");
+            ShowSummary(ret, toSave);
             return ret;
+        }
+
+        private void ShowSummary(List<List<FileItem>> result, long toSave)
+        {
+            if (result.Count == 0)
+                statusUpdater("No duplicates found.");
+            else 
+            {
+                var suffixFactor = 1.0;
+                var suffixName = "Bytes";
+                if (toSave > 1024 * 1024)
+                {
+                    suffixFactor = 1024.0 * 1024.0;
+                    suffixName = "MBytes";
+                }
+                else if (toSave > 1024)
+                {
+                    suffixFactor = 1024.0;
+                    suffixName = "KBytes";
+                }
+                var spaceToSave = ((double)toSave) / suffixFactor;
+
+                statusUpdater("Detected " + result.Count + " sets of duplicates with: "
+                    + string.Format("{0:0.###}", spaceToSave) + " " + suffixName + " of redundant space.");
+            }
         }
 
         public Action<string> statusUpdater = s => { };
