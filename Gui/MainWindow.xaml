@@ -52,7 +52,7 @@
         </Grid>
         <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,10,0,0">Duplicates:</TextBlock>
         <ListBox Grid.Row="4" Grid.Column="0" x:Name="DuplicateList" MouseDoubleClick="DuplicateList_MouseDoubleClick"
-                 SelectionChanged="DuplicateList_SelectionChanged" ToolTip="Duplicates found, only updated after new run or deletion. Double click to open a file."></ListBox>
+                 SelectionChanged="DuplicateList_SelectionChanged" KeyDown="DuplicateList_KeyPressed" ToolTip="Double click to open a file. Press Del to delete the selected file."></ListBox>
         <Grid Grid.Column="1" Grid.Row="4" Margin="5,5,5,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150"/>

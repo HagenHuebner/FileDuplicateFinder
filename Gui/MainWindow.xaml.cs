@@ -242,14 +242,23 @@ namespace Gui
             UpdateMinFileSize();
         }
 
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        private void DuplicateList_KeyPressed(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            OnDeleteSelected();
+        }
+
+        private void OnDeleteSelected() 
         {
             var selObj = DuplicateList.SelectedItem;
             if (selObj == null)
                 return;
 
-            var path = ((DuplicateEntry)selObj).Text;
-            if (!File.Exists(path)) 
+            var item = (DuplicateEntry)selObj;
+            if (!item.IsPath)
+                return;
+
+            var path = item.Text;
+            if (!File.Exists(path))
             {
                 ShowError(path + " does not exist");
                 return;
@@ -257,7 +266,7 @@ namespace Gui
 
             var deletePermanently = !RecycleCheckBox.IsChecked.GetValueOrDefault(false);
             var askUser = AskBeforeDeleteCheckBox.IsChecked.GetValueOrDefault(false);
-            if (askUser) 
+            if (askUser)
             {
                 var msg = deletePermanently ? "Delete " + path + " permanently?" :
                     "Recycle " + path + " ?";
@@ -270,17 +279,22 @@ namespace Gui
 
             try
             {
-                if(deletePermanently)
+                if (deletePermanently)
                     File.Delete(path);
                 else
                     FileSystem.DeleteFile(path, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
 
                 DuplicateList.Items.Remove(selObj);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 ShowError(ex.Message);
             }
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            OnDeleteSelected();
         }
     }
 }
