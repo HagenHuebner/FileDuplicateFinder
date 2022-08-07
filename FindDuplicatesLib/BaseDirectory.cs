@@ -61,7 +61,7 @@ namespace FindDuplicates
 
             foreach (var p in paths)
             {
-                statusUpdater("listing directory: " + p);
+                statusUpdater("Listing directory: " + p);
                 if (stopRequested)
                     return toSearch;
                 var files = GetFiles(p);
@@ -109,7 +109,7 @@ namespace FindDuplicates
         public List<DuplicateSet> Multiples()
         {
             var LengthToFile = SameSizeFiles();
-            statusUpdater("detecting duplicates");
+            statusUpdater("Scanning " + LengthToFile.Count + " files.");
             var ret = new List<DuplicateSet>();
             var candidateCnt = 0;
             long toSave = 0;
@@ -122,7 +122,7 @@ namespace FindDuplicates
                 {
                     ++candidateCnt;
                     if (candidateCnt % 200 == 0)
-                        statusUpdater(candidateCnt + " candiates");
+                        statusUpdater(candidateCnt + " candiates found.");
                     var hashToFileList = new Dictionary<string, List<FileItem>>();
                     foreach (var f in list)
                     {
