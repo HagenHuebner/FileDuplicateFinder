@@ -8,11 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="research.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FindDuplicatesLib\FindDuplicatesLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="research.png" />
   </ItemGroup>
 
 </Project>

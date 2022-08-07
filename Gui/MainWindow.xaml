@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Gui"
         mc:Ignorable="d"
         FontSize="14"
-        Title="Find file duplicates" Height="800" Width="800">
+        Title="Find file duplicates" Height="800" Width="800" Icon="/research.png">
     <Grid Margin="10,10,10,10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -15,12 +15,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0" Text="Search duplicate files in these directories:"/>
+        <TextBlock Grid.Column="0" Grid.Row="0" Margin="0,10,0,0">Search duplicate files in these directories:</TextBlock>
         <Grid Grid.Column="1" Grid.Row="1" Margin="5,5,5,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="130"/>
@@ -35,7 +35,7 @@
         </Grid>
         <ListBox x:Name="FoldersToSearchList" Grid.Column="0" Grid.Row="1" SelectionChanged="FoldersToSearchList_SelectionChanged"></ListBox>
 
-        <Grid Grid.Row="2" Grid.Column="0">
+        <Grid Grid.Row="2" Grid.Column="0" Margin="0,10,0,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="80"/>
                 <ColumnDefinition/>
