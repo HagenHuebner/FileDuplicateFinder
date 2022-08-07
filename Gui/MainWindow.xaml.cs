@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Threading;
-
+using Microsoft.VisualBasic.FileIO;
 using FindDuplicates;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -62,6 +61,7 @@ namespace Gui
             MinFileSizeEntry.Text = "0";
             SizeUnitSelection.SelectedIndex = 1;
             AskBeforeDeleteCheckBox.IsChecked = true;
+            RecycleCheckBox.IsChecked = false;
             UpdateGUI();
         }
 
@@ -254,11 +254,15 @@ namespace Gui
                 ShowError(path + " does not exist");
                 return;
             }
-            
+
+            var deletePermanently = !RecycleCheckBox.IsChecked.GetValueOrDefault(false);
             var askUser = AskBeforeDeleteCheckBox.IsChecked.GetValueOrDefault(false);
             if (askUser) 
             {
-                var res = MessageBox.Show("Delete " + path + " permanently?", "Delete file",
+                var msg = deletePermanently ? "Delete " + path + " permanently?" :
+                    "Recycle " + path + " ?";
+
+                var res = MessageBox.Show(msg, "Delete file",
                     MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (res != MessageBoxResult.Yes)
                     return;
@@ -266,7 +270,11 @@ namespace Gui
 
             try
             {
-                File.Delete(path);
+                if(deletePermanently)
+                    File.Delete(path);
+                else
+                    FileSystem.DeleteFile(path, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
+
                 DuplicateList.Items.Remove(selObj);
             }
             catch (Exception ex) 
