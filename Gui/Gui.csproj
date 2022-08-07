@@ -5,10 +5,16 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <AssemblyName>DuplicateFinder</AssemblyName>
+    <ApplicationIcon>research.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="research.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="research.ico" />
   </ItemGroup>
 
   <ItemGroup>
