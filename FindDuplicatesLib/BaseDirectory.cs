@@ -83,7 +83,7 @@ namespace FindDuplicates
                 if (stopRequested)
                     return LengthToFile;
                 ++totalFileCnt;
-                if (totalFileCnt % 1000 == 0 || relevantFileCnt % 1000 == 0)
+                if (totalFileCnt % 500 == 0 || relevantFileCnt % 500 == 0)
                     statusUpdater("total files: "+ totalFileCnt + " relevant: " + relevantFileCnt);
 
                 if (!Filter(f))
@@ -121,7 +121,7 @@ namespace FindDuplicates
                 if (list.Count > 1)
                 {
                     ++candidateCnt;
-                    if (candidateCnt % 1000 == 0)
+                    if (candidateCnt % 200 == 0)
                         statusUpdater(candidateCnt + " candiates");
                     var hashToFileList = new Dictionary<string, List<FileItem>>();
                     foreach (var f in list)
