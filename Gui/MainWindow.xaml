@@ -65,6 +65,8 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="50"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
 
             <Button Grid.Row="0" Grid.Column="0" x:Name="StartButton" ToolTip="Scan folders for duplicates." Click="StartButton_Click">Scan</Button>
@@ -73,6 +75,7 @@
             <CheckBox Grid.Row="5" Grid.Column="0" x:Name="RecycleCheckBox" ToolTip="Move to recycle bin instead of deleting files permanently. 
 This option may not work depending on your filesystem. Consider additional messages!">Move to bin</CheckBox>
             <Button Grid.Row="6" Grid.Column="0" x:Name="DeleteButton" ToolTip="Delete the selected file." Click="DeleteButton_Click">Delete</Button>
+            <Button Grid.Row="8" Grid.Column="0" x:Name="BatchDeleteButton" ToolTip="Delete multiple files" Click="BatchDelete_Click">Batch delete</Button>
         </Grid>
         <TextBlock Grid.Row="5" Grid.Column="0" x:Name="StatusText"/>
     </Grid>

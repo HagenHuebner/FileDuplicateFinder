@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseDirectory.cs" />
+    <Compile Include="BatchDeletionGuiControler.cs" />
     <Compile Include="DuplicateSet.cs" />
     <Compile Include="FileItem.cs" />
     <Compile Include="GuiController.cs" />

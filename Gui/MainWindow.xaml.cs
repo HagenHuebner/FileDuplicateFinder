@@ -82,12 +82,13 @@ namespace Gui
             StartButton.IsEnabled = ctrl.AllowStart() && FoldersToSearchList.Items.Count > 0;
             StopButton.IsEnabled = ctrl.AllowStop();
             UpdateDeleteButtonState();
+            BatchDeleteButton.IsEnabled = DuplicateList.Items.Count > 0;
         }
 
         private void UpdateGUI() 
         {
-            UpdateButtonStates();
             UpdateResultList();
+            UpdateButtonStates();
         }
 
         private void UpdateResultList() 
@@ -295,6 +296,12 @@ namespace Gui
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             OnDeleteSelected();
+        }
+
+        private void BatchDelete_Click(object sender, RoutedEventArgs e) 
+        {
+            var batchWin = new BatchDeleteWindow(ctrl.PathProvider);
+            batchWin.Show();
         }
     }
 }

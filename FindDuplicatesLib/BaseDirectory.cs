@@ -52,14 +52,14 @@ namespace FindDuplicates
 
         public BaseDirectory(List<string> pathsToSearch) 
         {
-            paths = pathsToSearch;
+            paths_ = pathsToSearch;
         }
 
         private List<FileItem> ListFilesFromAllDirs() 
         {
             var toSearch = new List<FileItem>();
 
-            foreach (var p in paths)
+            foreach (var p in paths_)
             {
                 statusUpdater("Listing directory: " + p);
                 if (stopRequested)
@@ -174,7 +174,7 @@ namespace FindDuplicates
 
         public Action<string> statusUpdater = s => { };
         public long minSize = 0;
-        private readonly List<string> paths;
+        private readonly List<string> paths_;
         public volatile bool stopRequested = false;
     }
 }
