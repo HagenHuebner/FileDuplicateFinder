@@ -13,7 +13,7 @@ class Programm
         }
     }
 
-    public static int Main(string[] args)
+    public static int Main()
     {
         var bd = new BaseDirectory(new List<string> { @"C:\dev\filehash\FindDuplicates\FindDuplicatesTest\testDir" })
         {

@@ -34,7 +34,7 @@ namespace FindDuplicates
                 suffixFactor = 1024.0;
                 suffixName = "KBytes";
             }
-            var spaceToSave = ((double)toSave) / suffixFactor;
+            var spaceToSave = (toSave) / suffixFactor;
 
             return string.Format("{0:0.###}", spaceToSave) + " " + suffixName;
         }
