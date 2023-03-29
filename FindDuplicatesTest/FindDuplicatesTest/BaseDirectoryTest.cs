@@ -18,6 +18,8 @@ namespace FindDuplicatesTest
                 "..", "..", "..", "..", "TestDirHashSubFolders"));
         }
 
+        //None of these paths need to exist before running tests.
+        
         [TestMethod]
         public void TotalNumberOfFiles()
         {

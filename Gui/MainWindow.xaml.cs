@@ -38,7 +38,7 @@ namespace Gui
         public MainWindow()
         {
             InitializeComponent();
-            ctrl = new GuiController();
+            ctrl = new();
             ctrl.PathProvider = () => {
                 var ret = new List<string>();
                 foreach (var i in FoldersToSearchList.Items)
@@ -197,7 +197,7 @@ namespace Gui
             UpdateGUI();
         }
 
-        private void ShowError(string msg) 
+        private static void ShowError(string msg) 
         {
             MessageBox.Show(msg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }

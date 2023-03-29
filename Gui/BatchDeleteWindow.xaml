@@ -15,10 +15,12 @@
             <RowDefinition Height="30"/>
             <RowDefinition MaxHeight="400"/>
             <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Grid.Row="0" Margin="0,10,0,0">Delete duplicates from these directories:</TextBlock>
         <ListBox x:Name="FoldersToDeleteFromList" Grid.Column="0" Grid.Row="1" ToolTip="List of directories from which dupplicates are deleted"></ListBox>
         <TextBlock x:Name="DeleteFileStatusText"  Foreground="Red" Grid.Column="0" Grid.Row="2" Margin="0,10,0,0"></TextBlock>
+        <ProgressBar Grid.Column="0" Grid.Row="3" Minimum="0" Maximum="100" Value="0" x:Name="pbStatus"></ProgressBar>
         <Grid Grid.Column="1" Grid.Row="1" Margin="5,5,5,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="130"/>

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -43,7 +45,7 @@ namespace Gui
         private void DeleteFilesButton_clicked(object sender, RoutedEventArgs e)
         {
             //TODO actually trigger deletion
-            Close();
+            BatchDeleteFiles();
         }
 
         private void RemoveFolderButton_clicked(object sender, RoutedEventArgs e) 
@@ -58,6 +60,43 @@ namespace Gui
         private void CancelButton_clicked(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void BatchDeleteFiles()
+        {
+            BackgroundWorker deletionWorder = new();
+            deletionWorder.WorkerReportsProgress = true;
+            deletionWorder.DoWork += worker_DoWork;
+            deletionWorder.ProgressChanged += worker_ProgressChanged;
+            deletionWorder.RunWorkerCompleted += OnWorkerFinished;
+            deletionWorder.RunWorkerAsync();
+        }
+
+
+        private void OnWorkerFinished(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message);
+            }
+            else
+            {
+                Close();
+            }
+        }
+
+        void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            for (int i = 0; i <= 100; i++) //perform deletion here
+            {
+                ((BackgroundWorker)sender).ReportProgress(i);
+                Thread.Sleep(100);
+            }
+        }
+
+        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            pbStatus.Value = e.ProgressPercentage;
         }
     }
 
