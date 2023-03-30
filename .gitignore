@@ -3,3 +3,4 @@ TestResults/
 FindDuplicatesTest/FindDuplicatesTest/bin
 FindDuplicatesTest/FindDuplicatesTest/obj
 .vs/
+*.bin

@@ -1,0 +1,2 @@
+
+Add progress bar also for file search

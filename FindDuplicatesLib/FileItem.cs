@@ -28,7 +28,7 @@ namespace FindDuplicates
             return size;
         }
 
-        public string FullPath;
+        private readonly string FullPath;
         private readonly long size;
     }
 }

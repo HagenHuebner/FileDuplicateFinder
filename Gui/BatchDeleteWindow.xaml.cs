@@ -2,17 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+
 
 using FindDuplicates;
 
@@ -23,17 +17,29 @@ namespace Gui
     /// </summary>
     public partial class BatchDeleteWindow : Window
     {
-        private readonly BatchDeletionGuiController ctrl_ = new();
+        private readonly BatchDeletionGuiController ctrl_;
+        delegate void UpdateUICallback(StatusUpdate statusUpdate);
 
-        public BatchDeleteWindow(Func<List<string>> searchPathProvider)
+        public BatchDeleteWindow(BatchDeletionGuiController ctrl)
         {
             InitializeComponent();
-            ctrl_.allPathProvider = searchPathProvider;
+            ctrl_ = ctrl;
             ctrl_.selectedPathsProvider = () => FoldersToDeleteFromList.Items.OfType<string>();
             foreach (var p in ctrl_.allPathProvider())
                 FoldersToDeleteFromList.Items.Add(p);
 
+            ctrl_.statusListener = (StatusUpdate update) =>
+            {
+                Dispatcher.BeginInvoke(new UpdateUICallback(UpdateProgressWidgets), new object[] { update });
+            };
+
             UpdateGui();
+        }
+
+        private void UpdateProgressWidgets(StatusUpdate statusUpdate) 
+        {
+            ProgressBar.Value = statusUpdate.Progress;
+            ProgressText.Text = statusUpdate.Message;
         }
 
         private void UpdateGui() 
@@ -44,8 +50,7 @@ namespace Gui
 
         private void DeleteFilesButton_clicked(object sender, RoutedEventArgs e)
         {
-            //TODO actually trigger deletion
-            BatchDeleteFiles();
+            ctrl_.DeleteDuplicates();
         }
 
         private void RemoveFolderButton_clicked(object sender, RoutedEventArgs e) 
@@ -60,43 +65,6 @@ namespace Gui
         private void CancelButton_clicked(object sender, RoutedEventArgs e)
         {
             Close();
-        }
-
-        private void BatchDeleteFiles()
-        {
-            BackgroundWorker deletionWorder = new();
-            deletionWorder.WorkerReportsProgress = true;
-            deletionWorder.DoWork += worker_DoWork;
-            deletionWorder.ProgressChanged += worker_ProgressChanged;
-            deletionWorder.RunWorkerCompleted += OnWorkerFinished;
-            deletionWorder.RunWorkerAsync();
-        }
-
-
-        private void OnWorkerFinished(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Error != null)
-            {
-                MessageBox.Show(e.Error.Message);
-            }
-            else
-            {
-                Close();
-            }
-        }
-
-        void worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            for (int i = 0; i <= 100; i++) //perform deletion here
-            {
-                ((BackgroundWorker)sender).ReportProgress(i);
-                Thread.Sleep(100);
-            }
-        }
-
-        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            pbStatus.Value = e.ProgressPercentage;
         }
     }
 

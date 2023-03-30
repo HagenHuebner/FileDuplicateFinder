@@ -26,7 +26,7 @@ namespace FindDuplicatesTest
             var files = new BaseDirectory(new List<string>()).GetFiles(testFolderPath);
             Assert.AreEqual(files.Count(), 5);
             foreach (var f in files)
-                Assert.IsTrue(f.Size() > 0 || f.FullPath.EndsWith("empty.txt"));
+                Assert.IsTrue(f.Size() > 0 || f.ToString().EndsWith("empty.txt"));
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace FindDuplicatesTest
             Assert.AreEqual(duplicatesAndB.Count, 4);
             var onlyEmpty = sizeToFile[0];
             Assert.AreEqual(onlyEmpty.Count, 1);
-            Assert.IsTrue(onlyEmpty[0].FullPath.EndsWith("empty.txt"));
+            Assert.IsTrue(onlyEmpty[0].ToString().EndsWith("empty.txt"));
         }
 
         [TestMethod]
@@ -77,10 +77,10 @@ namespace FindDuplicatesTest
             Assert.AreEqual(mul.Count, 1);
             var first = mul[0];
             Assert.AreEqual(first.Items.Count, 3);
-            Assert.IsTrue(first.Items.Any(x => x.FullPath.EndsWith("a.txt")));
-            Assert.IsTrue(first.Items.Any(x => x.FullPath.EndsWith("copyOfa.txt") && !x.FullPath.Contains("subdir")));
-            Assert.IsTrue(first.Items.Any(x => x.FullPath.EndsWith("copyOfa.txt") && x.FullPath.Contains("subdir")));
-            Assert.IsFalse(first.Items.Any(x => x.FullPath.EndsWith("b.txt")));
+            Assert.IsTrue(first.Items.Any(x => x.ToString().EndsWith("a.txt")));
+            Assert.IsTrue(first.Items.Any(x => x.ToString().EndsWith("copyOfa.txt") && !x.ToString().Contains("subdir")));
+            Assert.IsTrue(first.Items.Any(x => x.ToString().EndsWith("copyOfa.txt") && x.ToString().Contains("subdir")));
+            Assert.IsFalse(first.Items.Any(x => x.ToString().EndsWith("b.txt")));
         }
 
         private void TestSameSizeDifferentContent(BaseDirectory bd) 
@@ -89,10 +89,10 @@ namespace FindDuplicatesTest
             Assert.AreEqual(mul.Count, 2);
             var first = mul[0];
             Assert.AreEqual(first.Items.Count, 3);
-            Assert.IsTrue(first.Items.All(x => x.FullPath.Contains("asdf")));
+            Assert.IsTrue(first.Items.All(x => x.ToString().Contains("asdf")));
             var sec = mul[1];
             Assert.AreEqual(sec.Items.Count, 2);
-            Assert.IsTrue(sec.Items.All(x => x.FullPath.Contains("1234")));
+            Assert.IsTrue(sec.Items.All(x => x.ToString().Contains("1234")));
         } 
 
         [TestMethod]

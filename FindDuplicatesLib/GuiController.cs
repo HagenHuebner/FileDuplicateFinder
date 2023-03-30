@@ -6,6 +6,14 @@ namespace FindDuplicates
 {
     public class GuiController
     {
+        public BatchDeletionGuiController MkBatchDeletionController() 
+        {
+            var ret = new BatchDeletionGuiController();
+            ret.allPathProvider = PathProvider;
+
+            return ret;
+        }
+
         public bool AllowStart() 
         {
             return currentDir_ == null;

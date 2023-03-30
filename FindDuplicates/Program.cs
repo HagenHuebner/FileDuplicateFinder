@@ -9,7 +9,7 @@ class Programm
         {
             file.WriteLine("----  " + entry.Items.Count + " ----");
             foreach (var x in entry.Items)
-                file.WriteLine(x.FullPath);
+                file.WriteLine(x);
         }
     }
 

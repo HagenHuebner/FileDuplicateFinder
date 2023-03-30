@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Linq;
 
+
 namespace Gui
 {
     /// <summary>
@@ -18,22 +19,6 @@ namespace Gui
         private GuiController ctrl;
         delegate void StatusUpdateCallBack(string status);
         delegate void UpdateUICallback();
-
-        class DuplicateEntry
-        {
-            public DuplicateEntry(string name, bool isPath) 
-            {
-                Text = name;
-                IsPath = isPath;
-            }
-            public override string ToString()
-            {
-                return Text;
-            }
-
-            public readonly string Text;
-            public readonly bool IsPath;
-        }
 
         public MainWindow()
         {
@@ -73,7 +58,7 @@ namespace Gui
         private void UpdateDeleteButtonState() 
         {
             DeleteButton.IsEnabled = DuplicateList.SelectedIndex != -1 &&
-                ((DuplicateEntry) DuplicateList.SelectedItem).IsPath;
+                ((DuplicateEntry) DuplicateList.SelectedItem).IsFile();
         }
 
         private void UpdateButtonStates() 
@@ -99,9 +84,9 @@ namespace Gui
             {
                 foreach (var set in res)
                 {
-                    DuplicateList.Items.Add(new DuplicateEntry("--- " + set.ViewString(), false));
+                    DuplicateList.Items.Add(new SetDuplicateEntry(set));
                     foreach (var item in set.Items)
-                        DuplicateList.Items.Add(new DuplicateEntry(item.FullPath, true));
+                        DuplicateList.Items.Add(new FileDuplicateEntry(item));
                 }
             }
         }
@@ -211,7 +196,7 @@ namespace Gui
         {
             var item = DuplicateList.SelectedItem;
             var dup = (DuplicateEntry)item;
-            if (dup != null && dup.IsPath) 
+            if (dup != null && dup.IsFile()) 
             {
                 try
                 {
@@ -219,7 +204,7 @@ namespace Gui
                     {
                         new Process
                         {
-                            StartInfo = new ProcessStartInfo(dup.Text)
+                            StartInfo = new ProcessStartInfo(dup.Text())
                             {
                                 UseShellExecute = true
                             }
@@ -255,10 +240,10 @@ namespace Gui
                 return;
 
             var item = (DuplicateEntry)selObj;
-            if (!item.IsPath)
+            if (!item.IsFile())
                 return;
 
-            var path = item.Text;
+            var path = item.Text();
             if (!File.Exists(path))
             {
                 ShowError(path + " does not exist");
@@ -298,9 +283,24 @@ namespace Gui
             OnDeleteSelected();
         }
 
+        private List<DuplicateEntry> AllFileDuplicates() 
+        {
+            var ret = new List<DuplicateEntry>();
+            foreach(var obj in DuplicateList.Items) 
+            {
+                var dupEntry = (DuplicateEntry)obj;
+                if (dupEntry.IsFile())
+                    ret.Add(dupEntry);
+            }
+
+            return ret;
+        }
+
         private void BatchDelete_Click(object sender, RoutedEventArgs e) 
         {
-            var batchWin = new BatchDeleteWindow(ctrl.PathProvider);
+            var delCtrl = ctrl.MkBatchDeletionController();
+            delCtrl.duplicateProvider = AllFileDuplicates;
+            var batchWin = new BatchDeleteWindow(delCtrl);
             batchWin.Show();
         }
     }
