@@ -43,9 +43,9 @@ namespace FindDuplicates
             return result;
         }
 
-        public void DeleteDuplicates() 
+        public void DeleteDuplicatesAsync() 
         {
-            var task = new Task(BatchDelete);
+            var task = new Task(DeleteDuplicates);
             task.ContinueWith(OnDeleteException, TaskContinuationOptions.OnlyOnFaulted);
             task.Start();
         }
@@ -58,7 +58,7 @@ namespace FindDuplicates
             onFinished();
         }
 
-        private void BatchDelete()
+        public void DeleteDuplicates()
         {
             var toDelete = DuplicatePathsToDelete();
             var pw = new ProgressWatcher(toDelete.Count);
@@ -74,7 +74,7 @@ namespace FindDuplicates
                 {
                     statusListener(new StatusUpdate { Message = "Deleted " + pw.CurIdx, Progress = pw.Percentage });
                 }
-                Thread.Sleep(500); //Todo remove
+               // Thread.Sleep(500); //Todo remove
             }
         }
 

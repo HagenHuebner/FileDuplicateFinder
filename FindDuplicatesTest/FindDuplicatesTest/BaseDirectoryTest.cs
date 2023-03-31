@@ -8,6 +8,8 @@ namespace FindDuplicatesTest
         private static readonly string testFolderPath;
         private static readonly string sameSizeDiffContentPath;
         private static readonly string sameSizeDiffContentPathSubFolders;
+
+        //paths checked into git
         static BaseDirectoryTest() 
         {
             var executablePath = Directory.GetCurrentDirectory();
@@ -18,7 +20,6 @@ namespace FindDuplicatesTest
                 "..", "..", "..", "..", "TestDirHashSubFolders"));
         }
 
-        //None of these paths need to exist before running tests.
         
         [TestMethod]
         public void TotalNumberOfFiles()

@@ -50,7 +50,7 @@ namespace Gui
 
         private void DeleteFilesButton_clicked(object sender, RoutedEventArgs e)
         {
-            ctrl_.DeleteDuplicates();
+            ctrl_.DeleteDuplicatesAsync();
         }
 
         private void RemoveFolderButton_clicked(object sender, RoutedEventArgs e) 
