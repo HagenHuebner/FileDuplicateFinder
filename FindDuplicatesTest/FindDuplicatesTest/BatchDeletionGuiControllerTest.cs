@@ -157,12 +157,12 @@ namespace FindDuplicatesTest
             ctrl_.selectedPathsProvider = () => new List<string> { @"C:\foo" };
             var res = ctrl_.DuplicatePathsToDelete();
             Assert.AreEqual(1, res.Count);
-            Assert.AreEqual(res[0], exp);
+            Assert.AreEqual(res.First(), exp);
 
             ctrl_.selectedPathsProvider = () => new List<string> { @"C:\foo", "C:" };
             res = ctrl_.DuplicatePathsToDelete();
             Assert.AreEqual(1, res.Count);
-            Assert.AreEqual(res[0], exp);
+            Assert.AreEqual(res.First(), exp);
         }
 
     }

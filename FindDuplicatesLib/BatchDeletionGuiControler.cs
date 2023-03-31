@@ -24,9 +24,9 @@ namespace FindDuplicates
             return AllPathCnt() > ToDeleteCnt();
         }
 
-        public List<string> DuplicatePathsToDelete() 
+        public Queue<string> DuplicatePathsToDelete() 
         {
-            List<string> result = new List<string>();
+            Queue<string> result = new Queue<string>();
             List<string> selPaths = selectedPathsProvider().ToList();
             foreach (var dup in duplicateProvider()) 
             {
@@ -34,7 +34,7 @@ namespace FindDuplicates
                 {
                     if (dup.Text().StartsWith(p)) 
                     {
-                        result.Add(dup.Text());
+                        result.Enqueue(dup.Text());
                         break;
                     }
                 }
@@ -65,7 +65,7 @@ namespace FindDuplicates
 
             while (!pw.IsFinished()) 
             {
-                var path = toDelete[pw.CurIdx];
+                var path = toDelete.Dequeue();
                 if (File.Exists(path))
                 {
                     File.Delete(path);
