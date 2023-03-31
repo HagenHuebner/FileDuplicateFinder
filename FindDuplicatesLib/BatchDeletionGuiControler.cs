@@ -58,22 +58,48 @@ namespace FindDuplicates
             onFinished();
         }
 
+        private static void DeleteIfExists(string path) 
+        {
+            if (File.Exists(path))
+                File.Delete(path);
+        }
+
+        private void WatchProgress(ProgressWatcher pw) 
+        {
+            if (pw.IncrementAndCheckProgress())
+            {
+                statusListener(new StatusUpdate { Message = "Deleted " + pw.CurIdx, Progress = pw.Percentage });
+            }
+        }
+
+        public void DeleteDuplicatesAndCleanupFolders() 
+        {
+            var filePaths = DuplicatePathsToDelete();
+            var pathsToFileList = BaseDirectory.GroupByDirectory(filePaths);
+            var pw = new ProgressWatcher(filePaths.Count);
+            foreach (var item in pathsToFileList)
+            {
+                foreach (var filePath in item.Value) 
+                {
+                    DeleteIfExists(filePath);
+                    WatchProgress(pw);
+                }
+
+                var remainingFiles = Directory.GetFiles(item.Key);
+                if (remainingFiles.Length == 0)
+                    Directory.Delete(item.Key);
+            }
+        }
+
         public void DeleteDuplicates()
         {
-            var toDelete = DuplicatePathsToDelete();
-            var pw = new ProgressWatcher(toDelete.Count);
+            var filePaths = DuplicatePathsToDelete();
+            var pw = new ProgressWatcher(filePaths.Count);
 
             while (!pw.IsFinished()) 
             {
-                var path = toDelete.Dequeue();
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-                if (pw.IncrementAndCheckProgress()) 
-                {
-                    statusListener(new StatusUpdate { Message = "Deleted " + pw.CurIdx, Progress = pw.Percentage });
-                }
+                DeleteIfExists(filePaths.Dequeue());
+                WatchProgress(pw);
                // Thread.Sleep(500); //Todo remove
             }
         }

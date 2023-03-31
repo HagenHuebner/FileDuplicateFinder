@@ -64,7 +64,7 @@ namespace FindDuplicatesTest
         }
 
 
-        private void TestBatchDelete(bool reqursive) 
+        private void TestBatchDelete(bool recursive) 
         {
             EnsureEmptyDeleteDir();
             var toDel = Path.Combine(baseDirToBatchDeleteFrom, "toDeleteFrom");
@@ -74,8 +74,8 @@ namespace FindDuplicatesTest
             ctrl_.selectedPathsProvider = () => new List<string> { toDel };
             ctrl_.allPathProvider = () => new List<string> { toKeep, toDel };
 
-            var subDel1 = Path.Combine(toDel, "sub1");
-            var subDel2 = Path.Combine(toDel, "sub2");
+            var subDel1 = Path.Combine(toDel, "containsOnlyToDelete1");
+            var subDel2 = Path.Combine(toDel, "containsNotToDelete");
             Directory.CreateDirectory(subDel2);
             Directory.CreateDirectory(subDel1);
 
@@ -90,10 +90,20 @@ namespace FindDuplicatesTest
                 new TestFileDuplicate(dupInSub1)
                 };
 
-            ctrl_.DeleteDuplicates();
+            if (recursive)
+            {
+                ctrl_.DeleteDuplicatesAndCleanupFolders();
+                Assert.IsFalse(Directory.Exists(subDel1)); //since this folders is empty after Deletion
+            }
+            else 
+            {
+                ctrl_.DeleteDuplicates();
+                Assert.IsTrue(Directory.Exists(subDel1));
+            }
 
-            Assert.IsFalse(File.Exists(dupInSub2));
+            //files are always deleted
             Assert.IsFalse(File.Exists(dupInSub1));
+            Assert.IsFalse(File.Exists(dupInSub2));
             Assert.IsTrue(File.Exists(notADup));
         }
 
