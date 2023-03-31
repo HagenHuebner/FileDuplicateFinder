@@ -71,6 +71,23 @@ namespace FindDuplicates
             return toSearch;
         }
 
+        public static Dictionary<string, List<string>> GroupByDirectory(Queue<string> filePaths) 
+        {
+            var pathToFileList = new Dictionary<string, List<string>>();
+
+            while (filePaths.Count > 0) 
+            {
+                var next = filePaths.Dequeue();
+                var dir = Path.GetDirectoryName(next);
+                if(!pathToFileList.ContainsKey(dir))
+                    pathToFileList[dir] = new List<string> { next };
+                else
+                    pathToFileList[dir].Add(next);
+            }
+
+            return pathToFileList;
+        }
+
         public Dictionary<long, List<FileItem>> SameSizeFiles() 
         {
             var toSearch = ListFilesFromAllDirs();

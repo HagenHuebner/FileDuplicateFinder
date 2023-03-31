@@ -56,6 +56,45 @@ namespace FindDuplicatesTest
             Assert.IsFalse(BaseDirectory.PathsShareDirectory(@"C:\asdf\tit\sub", @"C:\asdf\mid\sub"));
         }
 
+        [TestMethod]
+        public void GroupByDirTwoGroups()
+        {
+            var files = new Queue<string>();
+            files.Enqueue(@"C:\asdf\foo.txt");
+            files.Enqueue(@"C:\asdf\asdf.xt");
+            files.Enqueue(@"C:\asdf\asdf\Holla.txt");
+            files.Enqueue(@"C:\fdsa\asdf.xt");
+
+            var res = BaseDirectory.GroupByDirectory(files);
+            Assert.AreEqual(3, res.Count);
+            var asdfDir = res[@"C:\asdf"];
+            Assert.AreEqual(2, asdfDir.Count);
+            Assert.IsTrue(asdfDir.Any((x) => x.Equals(@"C:\asdf\foo.txt")));
+            Assert.IsTrue(asdfDir.Any((x) => x.Equals(@"C:\asdf\asdf.xt")));
+            var fdsaDir = res[@"C:\fdsa"];
+            Assert.AreEqual(1, fdsaDir.Count);
+            Assert.AreEqual(@"C:\fdsa\asdf.xt", fdsaDir[0]);
+
+            var asdfAsdfDir = res[@"C:\asdf\asdf"];
+            Assert.AreEqual(1, asdfAsdfDir.Count);
+            Assert.AreEqual(@"C:\asdf\asdf\Holla.txt", asdfAsdfDir[0]);
+        }
+
+        [TestMethod]
+        public void GroupByDirSingleFileAtRoot() 
+        {
+            var files = new Queue<string>();
+            files.Enqueue(@"C:\foo.txt");
+            var res = BaseDirectory.GroupByDirectory(files);
+            Assert.AreEqual(1, res.Count);
+            Assert.AreEqual(res[@"C:\"][0], @"C:\foo.txt");
+        }
+
+        public void GroupByDirEmpty() 
+        {
+            var res = BaseDirectory.GroupByDirectory(new Queue<string>());
+            Assert.AreEqual(0, res.Count);
+        }
 
         [TestMethod]
         public void FindsFilesWithEqualSizes() 
