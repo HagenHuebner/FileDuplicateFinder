@@ -268,7 +268,7 @@ namespace Gui
                 if (deletePermanently)
                     File.Delete(path);
                 else
-                    FileSystem.DeleteFile(path, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
+                    FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 
                 DuplicateList.Items.Remove(selObj);
             }

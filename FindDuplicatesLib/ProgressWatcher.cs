@@ -31,6 +31,12 @@ namespace FindDuplicates
             return progressChangedSignificanly;
         }
 
+        public StatusUpdate MkUpdate(string actionName) 
+        {
+            var progTxt = " (" + CurIdx + "/" + lastStep + ")";
+            return new StatusUpdate { Message = actionName + progTxt, Progress = Percentage };
+        }
+
         public bool IsFinished() 
         {
             return CurIdx == lastStep;

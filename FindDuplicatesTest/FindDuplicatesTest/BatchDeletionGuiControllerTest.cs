@@ -63,21 +63,24 @@ namespace FindDuplicatesTest
             return path;
         }
 
+        private string AddDir(string basePath, string dirName) 
+        {
+            var p = Path.Combine(basePath, dirName);
+            Directory.CreateDirectory(p);
+            return p;
+        }
+
 
         private void TestBatchDelete(bool recursive) 
         {
             EnsureEmptyDeleteDir();
-            var toDel = Path.Combine(baseDirToBatchDeleteFrom, "toDeleteFrom");
-            var toKeep = Path.Combine(baseDirToBatchDeleteFrom, "toKeep");
-            Directory.CreateDirectory(toDel);
-            Directory.CreateDirectory(toKeep);
+            var toDel = AddDir(baseDirToBatchDeleteFrom, "toDeleteFrom");
+            var toKeep = AddDir(baseDirToBatchDeleteFrom, "toKeep");
             ctrl_.selectedPathsProvider = () => new List<string> { toDel };
             ctrl_.allPathProvider = () => new List<string> { toKeep, toDel };
 
-            var subDel1 = Path.Combine(toDel, "containsOnlyToDelete1");
-            var subDel2 = Path.Combine(toDel, "containsNotToDelete");
-            Directory.CreateDirectory(subDel2);
-            Directory.CreateDirectory(subDel1);
+            var subDel1 = AddDir(toDel, "containsOnlyToDelete1");
+            var subDel2 = AddDir(toDel, "containsNotToDelete");
 
             //these are all empty files, duplicate detection is not tested here, just the deletion.
             var dupInSub1 = AddFile(subDel1, "toDelete1.txt");
@@ -105,6 +108,45 @@ namespace FindDuplicatesTest
             Assert.IsFalse(File.Exists(dupInSub1));
             Assert.IsFalse(File.Exists(dupInSub2));
             Assert.IsTrue(File.Exists(notADup));
+        }
+
+        [TestMethod]
+        public void BatchRecursiveDoesNotDeleteTargetFolder() 
+        {
+            EnsureEmptyDeleteDir();
+            var toDel = AddDir(baseDirToBatchDeleteFrom, "toDeleteFrom");
+            var dup = AddFile(toDel, "toDelete.txt");
+            ctrl_.duplicateProvider = () => new List<DuplicateEntry>() {
+                new TestFileDuplicate(dup)
+                };
+
+            ctrl_.allPathProvider = () => new List<string> { toDel };
+            ctrl_.selectedPathsProvider = () => new List<string> { toDel };
+
+            ctrl_.DeleteDuplicatesAndCleanupFolders();
+            Assert.IsFalse(File.Exists(dup));
+            Assert.IsTrue(Directory.Exists(toDel)); //because toDel is the target folder
+        }
+
+        [TestMethod]
+        public void BatchRecursiveKeepsEmptySubDirectories() 
+        {
+            EnsureEmptyDeleteDir();
+            var toDel = AddDir(baseDirToBatchDeleteFrom, "toDeleteFrom");
+            var sub = AddDir(toDel, "sub");
+
+            var emptyInSub= AddDir(sub, "empty");
+            var dup = AddDir(sub, "dup.txt");
+
+            ctrl_.duplicateProvider = () => new List<DuplicateEntry>() {
+                new TestFileDuplicate(dup)
+                };
+            ctrl_.allPathProvider = () => new List<string> { toDel };
+            ctrl_.selectedPathsProvider = () => new List<string> { toDel };
+
+            ctrl_.DeleteDuplicatesAndCleanupFolders();
+            Assert.IsFalse(File.Exists(dup));
+            Assert.IsTrue(Directory.Exists(emptyInSub));
         }
 
         [TestMethod]

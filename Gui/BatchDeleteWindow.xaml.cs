@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using FindDuplicates;
 using System.Linq;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-
-
-using FindDuplicates;
 
 namespace Gui
 {
@@ -18,7 +10,9 @@ namespace Gui
     public partial class BatchDeleteWindow : Window
     {
         private readonly BatchDeletionGuiController ctrl_;
-        delegate void UpdateUICallback(StatusUpdate statusUpdate);
+        delegate void UpdateStatusTextCallBack(StatusUpdate statusUpdate);
+        delegate void EnableButtonCallBack(bool enable);
+        delegate void UpdateGUICallback();
 
         public BatchDeleteWindow(BatchDeletionGuiController ctrl)
         {
@@ -30,19 +24,32 @@ namespace Gui
 
             ctrl_.statusListener = (StatusUpdate update) =>
             {
-                Dispatcher.BeginInvoke(new UpdateUICallback(UpdateProgressWidgets), new object[] { update });
+                Dispatcher.BeginInvoke(new UpdateStatusTextCallBack(UpdateProgressWidgets), new object[] { update });
+            };
+
+            ctrl_.onFinished = () =>
+            {
+                Dispatcher.BeginInvoke(new EnableButtonCallBack(EnableButtons), new object[] { true });
+                Dispatcher.BeginInvoke(new UpdateGUICallback(UpdateGui));
             };
 
             UpdateGui();
         }
 
-        private void UpdateProgressWidgets(StatusUpdate statusUpdate) 
+        private void UpdateProgressWidgets(StatusUpdate statusUpdate)
         {
             ProgressBar.Value = statusUpdate.Progress;
             ProgressText.Text = statusUpdate.Message;
         }
 
-        private void UpdateGui() 
+        private void EnableButtons(bool enabled)
+        {
+            DeleteFilesButton.IsEnabled = enabled;
+            CancelButton.IsEnabled = enabled;
+            RemoveFolderButton.IsEnabled = enabled;
+        }
+
+        private void UpdateGui()
         {
             DeleteFilesButton.IsEnabled = ctrl_.DeleteEnabled();
             DeleteFileStatusText.Text = ctrl_.CannotDeleteAllErorrMessage();
@@ -51,10 +58,11 @@ namespace Gui
         private void DeleteFilesButton_clicked(object sender, RoutedEventArgs e)
         {
             var delFolders = CleanupFolderCheckBox.IsChecked.GetValueOrDefault(false);
+            EnableButtons(false);
             ctrl_.DeleteDuplicatesAsync(delFolders);
         }
 
-        private void RemoveFolderButton_clicked(object sender, RoutedEventArgs e) 
+        private void RemoveFolderButton_clicked(object sender, RoutedEventArgs e)
         {
             var i = FoldersToDeleteFromList.SelectedIndex;
             if (i != -1)

@@ -1,2 +1,18 @@
 
 Add progress bar also for file search
+Show summary after batch deletion with cleanup
+
+Fix
+-Batch delete not possible with only one folder
+-Batch delete deletes last file if all duplicates reside in selected folders
+
+Test
+recycle again single file
+One file is locked in batch deletion
+Progress display
+Finish summary: folders and files only
+UI is blocked while batch deleting
+
+
+Do folders accessible from a shortcut get deleted?
+Are files within one source directory deleted (duplicates in subdirs), maybe allow source folder pair check
