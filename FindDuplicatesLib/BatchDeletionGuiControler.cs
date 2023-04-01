@@ -43,9 +43,9 @@ namespace FindDuplicates
             return result;
         }
 
-        public void DeleteDuplicatesAsync() 
+        public void DeleteDuplicatesAsync(bool removeEmptyDirs) 
         {
-            var task = new Task(DeleteDuplicates);
+            var task = removeEmptyDirs ? new Task(DeleteDuplicatesAndCleanupFolders) : new Task(DeleteDuplicates);
             task.ContinueWith(OnDeleteException, TaskContinuationOptions.OnlyOnFaulted);
             task.Start();
         }
@@ -64,6 +64,15 @@ namespace FindDuplicates
                 File.Delete(path);
         }
 
+        private static void DeleteDirIfExistingAndEmpty(string dirPath) 
+        {
+            if (!Directory.Exists(dirPath))
+                return;
+            var remainingFiles = Directory.GetFiles(dirPath);
+            if (remainingFiles.Length == 0)
+                Directory.Delete(dirPath);
+        }
+
         private void WatchProgress(ProgressWatcher pw) 
         {
             if (pw.IncrementAndCheckProgress())
@@ -75,8 +84,9 @@ namespace FindDuplicates
         public void DeleteDuplicatesAndCleanupFolders() 
         {
             var filePaths = DuplicatePathsToDelete();
+            var fileCnt = filePaths.Count;
             var pathsToFileList = BaseDirectory.GroupByDirectory(filePaths);
-            var pw = new ProgressWatcher(filePaths.Count);
+            var pw = new ProgressWatcher(fileCnt);
             foreach (var item in pathsToFileList)
             {
                 foreach (var filePath in item.Value) 
@@ -85,9 +95,7 @@ namespace FindDuplicates
                     WatchProgress(pw);
                 }
 
-                var remainingFiles = Directory.GetFiles(item.Key);
-                if (remainingFiles.Length == 0)
-                    Directory.Delete(item.Key);
+                DeleteDirIfExistingAndEmpty(item.Key);
             }
         }
 
@@ -100,7 +108,6 @@ namespace FindDuplicates
             {
                 DeleteIfExists(filePaths.Dequeue());
                 WatchProgress(pw);
-               // Thread.Sleep(500); //Todo remove
             }
         }
 

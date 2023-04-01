@@ -50,7 +50,8 @@ namespace Gui
 
         private void DeleteFilesButton_clicked(object sender, RoutedEventArgs e)
         {
-            ctrl_.DeleteDuplicatesAsync();
+            var delFolders = CleanupFolderCheckBox.IsChecked.GetValueOrDefault(false);
+            ctrl_.DeleteDuplicatesAsync(delFolders);
         }
 
         private void RemoveFolderButton_clicked(object sender, RoutedEventArgs e) 
