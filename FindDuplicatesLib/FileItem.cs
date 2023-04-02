@@ -10,5 +10,6 @@ namespace FindDuplicates
     {
         public long Size();
         public string FullPath();
+        public string FileHash();
     }
 }

@@ -34,7 +34,7 @@ namespace FindDuplicates
             return true;
         }
 
-        public IEnumerable<FileItemImpl> GetFiles(string path)
+        public IEnumerable<FileItem> GetFiles(string path)
         {
             var queue = new Queue<string>();
             queue.Enqueue(path);
@@ -55,9 +55,9 @@ namespace FindDuplicates
             paths_ = pathsToSearch;
         }
 
-        private List<FileItemImpl> ListFilesFromAllDirs() 
+        private List<FileItem> ListFilesFromAllDirs() 
         {
-            var toSearch = new List<FileItemImpl>();
+            var toSearch = new List<FileItem>();
 
             foreach (var p in paths_)
             {
@@ -88,11 +88,11 @@ namespace FindDuplicates
             return pathToFileList;
         }
 
-        public Dictionary<long, List<FileItemImpl>> SameSizeFiles() 
+        public Dictionary<long, List<FileItem>> SameSizeFiles() 
         {
             var toSearch = ListFilesFromAllDirs();
             statusUpdater("Comparing file sizes.");
-            var LengthToFile = new Dictionary<long, List<FileItemImpl>>();
+            var LengthToFile = new Dictionary<long, List<FileItem>>();
             var totalFileCnt = 0;
             var relevantFileCnt = 0;
             foreach (var f in toSearch) 
@@ -111,14 +111,14 @@ namespace FindDuplicates
                 if (LengthToFile.ContainsKey(size))
                     LengthToFile[size].Add(f);
                 else 
-                    LengthToFile[size] = new List<FileItemImpl> { f };
+                    LengthToFile[size] = new List<FileItem> { f };
             }
 
             statusUpdater("Found " + totalFileCnt + " files of which " + relevantFileCnt + " are relevant.");
             return LengthToFile;
         }
 
-        private bool Filter(FileItemImpl f) 
+        private bool Filter(FileItem f) 
         {
             return f.Size() >= minSize;
         }
