@@ -34,7 +34,7 @@ namespace FindDuplicates
             return true;
         }
 
-        public IEnumerable<FileItem> GetFiles(string path)
+        public IEnumerable<FileItemImpl> GetFiles(string path)
         {
             var queue = new Queue<string>();
             queue.Enqueue(path);
@@ -46,7 +46,7 @@ namespace FindDuplicates
 
                 string[] files = Directory.GetFiles(path);
                 for (var i = 0; i < files.Length; i++)
-                    yield return new FileItem(files[i]);
+                    yield return new FileItemImpl(files[i]);
             }
         }
 
@@ -55,9 +55,9 @@ namespace FindDuplicates
             paths_ = pathsToSearch;
         }
 
-        private List<FileItem> ListFilesFromAllDirs() 
+        private List<FileItemImpl> ListFilesFromAllDirs() 
         {
-            var toSearch = new List<FileItem>();
+            var toSearch = new List<FileItemImpl>();
 
             foreach (var p in paths_)
             {
@@ -88,11 +88,11 @@ namespace FindDuplicates
             return pathToFileList;
         }
 
-        public Dictionary<long, List<FileItem>> SameSizeFiles() 
+        public Dictionary<long, List<FileItemImpl>> SameSizeFiles() 
         {
             var toSearch = ListFilesFromAllDirs();
             statusUpdater("Comparing file sizes.");
-            var LengthToFile = new Dictionary<long, List<FileItem>>();
+            var LengthToFile = new Dictionary<long, List<FileItemImpl>>();
             var totalFileCnt = 0;
             var relevantFileCnt = 0;
             foreach (var f in toSearch) 
@@ -111,14 +111,14 @@ namespace FindDuplicates
                 if (LengthToFile.ContainsKey(size))
                     LengthToFile[size].Add(f);
                 else 
-                    LengthToFile[size] = new List<FileItem> { f };
+                    LengthToFile[size] = new List<FileItemImpl> { f };
             }
 
             statusUpdater("Found " + totalFileCnt + " files of which " + relevantFileCnt + " are relevant.");
             return LengthToFile;
         }
 
-        private bool Filter(FileItem f) 
+        private bool Filter(FileItemImpl f) 
         {
             return f.Size() >= minSize;
         }

@@ -25,7 +25,7 @@ namespace FindDuplicates
 
         public string Text() 
         {
-            return File.ToString();
+            return File.FullPath();
         }
 
         public readonly FileItem File;

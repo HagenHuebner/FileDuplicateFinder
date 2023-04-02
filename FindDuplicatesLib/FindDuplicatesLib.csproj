@@ -45,11 +45,12 @@
   <ItemGroup>
     <Compile Include="BaseDirectory.cs" />
     <Compile Include="BatchDeletionGuiControler.cs" />
+    <Compile Include="FileItem.cs" />
     <Compile Include="ProgressWatcher.cs" />
     <Compile Include="SetDuplicateEntry.cs" />
     <Compile Include="DuplicateSet.cs" />
     <Compile Include="FileDuplicateEntry.cs" />
-    <Compile Include="FileItem.cs" />
+    <Compile Include="FileItemImpl.cs" />
     <Compile Include="GuiController.cs" />
     <Compile Include="DuplicateEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
