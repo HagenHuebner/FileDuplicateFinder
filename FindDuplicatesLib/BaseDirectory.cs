@@ -58,16 +58,18 @@ namespace FindDuplicates
         private List<FileItem> ListFilesFromAllDirs() 
         {
             var toSearch = new List<FileItem>();
-
+            var watcher = new ProgressWatcher(paths_.Count);
+            statusUpdater(watcher.MkUpdate("Listing directories"));
             foreach (var p in paths_)
             {
-                statusUpdater("Listing directory: " + p);
                 if (stopRequested)
                     return toSearch;
                 var files = GetFiles(p);
                 toSearch.AddRange(files.ToList());
+                if (watcher.IncrementAndCheckProgress())
+                    statusUpdater(watcher.MkUpdate("Listed directory: " + p));
             }
-
+            statusUpdater(new StatusUpdate("Finished listing", 100));
             return toSearch;
         }
 
@@ -91,7 +93,8 @@ namespace FindDuplicates
         public Dictionary<long, List<FileItem>> SameSizeFiles() 
         {
             var toSearch = ListFilesFromAllDirs();
-            statusUpdater("Comparing file sizes.");
+            var watcher = new ProgressWatcher(toSearch.Count);
+            statusUpdater(new StatusUpdate("Comparing file sizes.", 0));
             var LengthToFile = new Dictionary<long, List<FileItem>>();
             var totalFileCnt = 0;
             var relevantFileCnt = 0;
@@ -99,9 +102,13 @@ namespace FindDuplicates
             {
                 if (stopRequested)
                     return LengthToFile;
+
                 ++totalFileCnt;
-                if (totalFileCnt % 500 == 0 || relevantFileCnt % 500 == 0)
-                    statusUpdater("total files: "+ totalFileCnt + " relevant: " + relevantFileCnt);
+                if (watcher.IncrementAndCheckProgress()) 
+                {
+                    statusUpdater(new StatusUpdate("total files: "+ totalFileCnt
+                        + " relevant: " + relevantFileCnt, watcher.Percentage));
+                }
 
                 if (!Filter(f))
                     continue;
@@ -114,7 +121,8 @@ namespace FindDuplicates
                     LengthToFile[size] = new List<FileItem> { f };
             }
 
-            statusUpdater("Found " + totalFileCnt + " files of which " + relevantFileCnt + " are relevant.");
+            statusUpdater(new StatusUpdate("Found " + totalFileCnt + " files of which "
+                + relevantFileCnt + " are relevant.", 100));
             return LengthToFile;
         }
 
@@ -126,20 +134,19 @@ namespace FindDuplicates
         public List<DuplicateSet> Multiples()
         {
             var LengthToFile = SameSizeFiles();
-            statusUpdater("Scanning " + LengthToFile.Count + " files.");
+            var progWatcher = new ProgressWatcher(LengthToFile.Count);
+            statusUpdater(new StatusUpdate("Scanning " + LengthToFile.Count + " files.", 0));
             var ret = new List<DuplicateSet>();
-            var candidateCnt = 0;
             long toSave = 0;
             foreach (var x in LengthToFile)
             {
                 if (stopRequested)
                     return ret;
                 var list = x.Value;
+                if (progWatcher.IncrementAndCheckProgress())
+                    statusUpdater(progWatcher.MkUpdate("Checking candidates"));
                 if (list.Count > 1)
                 {
-                    ++candidateCnt;
-                    if (candidateCnt % 200 == 0)
-                        statusUpdater(candidateCnt + " candiates found.");
                     var hashToFileList = new Dictionary<string, List<FileItem>>();
                     foreach (var f in list)
                     {
@@ -181,15 +188,16 @@ namespace FindDuplicates
         private void ShowSummary(List<DuplicateSet> result, long toSave)
         {
             if (result.Count == 0)
-                statusUpdater("No duplicates found.");
+                statusUpdater(new StatusUpdate("No duplicates found.", 100));
             else 
             {
-                statusUpdater("Found " + result.Count + " sets of duplicates with: "
-                    + DuplicateSet.FormatSize(toSave) + " of redundant space.");
+                var update = new StatusUpdate("Found " + result.Count + " sets of duplicates with: "
+                    + DuplicateSet.FormatSize(toSave) + " of redundant space.", 100);
+                statusUpdater(update);
             }
         }
 
-        public Action<string> statusUpdater = s => { };
+        public Action<StatusUpdate> statusUpdater = s => { };
         public long minSize = 0;
         private readonly List<string> paths_;
         public volatile bool stopRequested = false;

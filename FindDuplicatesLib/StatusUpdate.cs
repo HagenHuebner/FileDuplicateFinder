@@ -8,6 +8,12 @@ namespace FindDuplicates
 {
     public class StatusUpdate
     {
+        public StatusUpdate(string message, int progress)
+        {
+            Message=message;
+            Progress=progress;
+        }
+
         public string Message { get; set; }
         public int Progress { get; set; }
     }

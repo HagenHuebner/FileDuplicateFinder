@@ -86,7 +86,7 @@ namespace FindDuplicates
         private void OnDeleteException(Task tsk)
         {
             var ex = tsk.Exception;
-            statusListener(new StatusUpdate { Message = ex.Message, Progress = 0 });
+            statusListener(new StatusUpdate(ex.Message, 0));
             onFinished();
         }
 
@@ -152,12 +152,7 @@ namespace FindDuplicates
                     ++delFolderCnt;
             }
 
-            statusListener(new StatusUpdate
-            {
-                Message="Deleted " + delFileCnt + " files and "
-                + delFolderCnt + " directories.",
-                Progress=100
-            });
+            statusListener(new StatusUpdate("Deleted " + delFileCnt + " files and " + delFolderCnt + " directories.", 100));
             onFinished();
         }
 
@@ -173,7 +168,7 @@ namespace FindDuplicates
                     ++delFileCnt;
                 WatchProgress(pw);
             }
-            statusListener(new StatusUpdate { Message = "Deleted " + delFileCnt + " files.", Progress = 100 });
+            statusListener(new StatusUpdate("Deleted " + delFileCnt + " files.", 100));
             onFinished();
         }
 

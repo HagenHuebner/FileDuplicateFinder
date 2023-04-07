@@ -34,7 +34,7 @@ namespace FindDuplicates
         public StatusUpdate MkUpdate(string actionName) 
         {
             var progTxt = " (" + CurIdx + "/" + lastStep + ")";
-            return new StatusUpdate { Message = actionName + progTxt, Progress = Percentage };
+            return new StatusUpdate(actionName + progTxt, Percentage);
         }
 
         public bool IsFinished() 

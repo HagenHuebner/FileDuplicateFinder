@@ -17,7 +17,7 @@ namespace Gui
     public partial class MainWindow : Window
     {
         private GuiController ctrl;
-        delegate void StatusUpdateCallBack(string status);
+        delegate void StatusUpdateCallBack(StatusUpdate status);
         delegate void UpdateUICallback();
 
         public MainWindow()
@@ -39,9 +39,9 @@ namespace Gui
             {
                 Dispatcher.BeginInvoke(new UpdateUICallback(UpdateGUI));
             };
-            ctrl.StatusListener = (string txt) =>
+            ctrl.StatusListener = (StatusUpdate update) =>
             {
-                StatusText.Dispatcher.BeginInvoke(new StatusUpdateCallBack(UpdateStatusText), new object[] { txt });
+                Dispatcher.BeginInvoke(new StatusUpdateCallBack(UpdateStatusText), new object[] { update });
             };
             MinFileSizeEntry.Text = "0";
             SizeUnitSelection.SelectedIndex = 1;
@@ -50,9 +50,10 @@ namespace Gui
             UpdateGUI();
         }
 
-        private void UpdateStatusText(string txt) 
+        private void UpdateStatusText(StatusUpdate upd) 
         {
-            StatusText.Text = txt;
+            StatusText.Text = upd.Message;
+            ProgressBar.Value = upd.Progress;
         }
 
         private void UpdateDeleteButtonState() 

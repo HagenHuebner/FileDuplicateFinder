@@ -29,7 +29,7 @@ namespace FindDuplicates
             if (currentDir_ != null) 
             {
                 currentDir_.stopRequested = true;
-                StatusListener("Stopping search, this may take a few minutes.");
+                StatusListener(new StatusUpdate("Stopping search, this may take a few minutes.", 0));
             }
         }
 
@@ -52,7 +52,7 @@ namespace FindDuplicates
         private void OnFolderSearchException(Task tsk) 
         {
             var ex = tsk.Exception;
-            StatusListener(ex.Message);
+            StatusListener(new StatusUpdate(ex.Message, 0));
             Finished();
         }
 
@@ -66,7 +66,7 @@ namespace FindDuplicates
         private void Finished() 
         {
             if (currentDir_.stopRequested)
-                StatusListener("aborted");
+                StatusListener(new StatusUpdate("aborted", 0));
             currentDir_ = null;
             OnFinished();
         }
@@ -75,7 +75,7 @@ namespace FindDuplicates
         private volatile List<DuplicateSet> multiples_;
         public long minFileSize = 0;
         public Action OnFinished;
-        public Action<string> StatusListener;
+        public Action<StatusUpdate> StatusListener;
         public Func<List<string>> PathProvider;
     }
 }

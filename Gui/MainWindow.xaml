@@ -18,6 +18,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Grid.Row="0" Margin="0,10,0,0">Search duplicate files in these directories:</TextBlock>
@@ -77,6 +78,7 @@ This option may not work depending on your filesystem. Consider additional messa
             <Button Grid.Row="6" Grid.Column="0" x:Name="DeleteButton" ToolTip="Delete the selected file." Click="DeleteButton_Click">Delete</Button>
             <Button Grid.Row="8" Grid.Column="0" x:Name="BatchDeleteButton" ToolTip="Delete multiple files" Click="BatchDelete_Click">Batch delete</Button>
         </Grid>
-        <TextBlock Grid.Row="5" Grid.Column="0" x:Name="StatusText"/>
+        <ProgressBar Grid.Column="0" Grid.Row="5" Minimum="0" Maximum="100" Value="0" x:Name="ProgressBar" Margin="0,10,0,0"></ProgressBar>
+        <TextBlock Grid.Row="6" Grid.Column="0" x:Name="StatusText"/>
     </Grid>
 </Window>
