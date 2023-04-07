@@ -10,7 +10,7 @@ namespace FindDuplicates
     {
         public Func<List<string>> allPathProvider;
         public Func<IEnumerable<string>> selectedPathsProvider;
-        public Func<List<DuplicateEntry>> duplicateProvider;
+        public Func<List<DuplicateSet>> duplicateProvider;
         public Action<StatusUpdate> statusListener = (x) => { };
         public Action onFinished = () => { };
 
@@ -23,20 +23,53 @@ namespace FindDuplicates
             return AllPathCnt() > PathsToDeleteFromCnt();
         }
 
+        public static int DirSeparatorCount(string p) 
+        {
+            return p.Count(c => c == Path.DirectorySeparatorChar);
+        }
+
+        public static int ShorterPathAndFewerLevelsFirst(string a, string b) 
+        {
+            if (a.Length == b.Length)
+            {
+                var scA = DirSeparatorCount(a);
+                var scB = DirSeparatorCount(b);
+                if (scA < scB)
+                    return 1;
+                else if (scA > scB)
+                    return -1;
+                else
+                    return 0;
+            }
+            else if (a.Length < b.Length)
+                return 1;
+            else
+                return -1;
+        }
+
         public Queue<string> DuplicatePathsToDelete()
         {
-            Queue<string> result = new Queue<string>();
-            List<string> selPaths = selectedPathsProvider().ToList();
-            foreach (var dup in duplicateProvider())
+            var result = new Queue<string>();
+            var selPaths = selectedPathsProvider().ToList();
+            foreach (var ds in duplicateProvider())
             {
-                foreach (var p in selPaths)
+                var notInSelectedPathsCnt = 0;
+                var inSelectedPaths = new List<string>();
+
+                foreach (var fileItem in ds.Items) 
                 {
-                    if (dup.Text().StartsWith(p))
-                    {
-                        result.Enqueue(dup.Text());
-                        break;
-                    }
+                    if (selPaths.Any(p => fileItem.FullPath().StartsWith(p)))
+                        inSelectedPaths.Add(fileItem.FullPath());
+                    else
+                        ++notInSelectedPathsCnt;
                 }
+                if (notInSelectedPathsCnt == 0) 
+                { //all duplicates are inside the selected path
+                    inSelectedPaths.Sort(ShorterPathAndFewerLevelsFirst);
+                    inSelectedPaths.RemoveAt(inSelectedPaths.Count - 1);
+                }
+                foreach (var p in inSelectedPaths)
+                    result.Enqueue(p);
             }
 
             return result;
@@ -92,12 +125,12 @@ namespace FindDuplicates
 
         public void DeleteDuplicatesAndCleanupFolders()
         {
-            var duplicates = DuplicatePathsToDelete();
+            var dupPaths = DuplicatePathsToDelete();
             var rootDirectories = selectedPathsProvider().ToList();
-            var fileCnt = duplicates.Count;
-            var dirToDupeList = BaseDirectory.GroupByDirectory(duplicates);
+            var fileCnt = dupPaths.Count;
+            var dirToDupeList = BaseDirectory.GroupByDirectory(dupPaths);
             //Start with deepest directories so that the empty-test is only needed once per directory.
-            var folderPaths = dirToDupeList.Keys.OrderByDescending(p => p.Count(c => c == Path.DirectorySeparatorChar));
+            var folderPaths = dirToDupeList.Keys.OrderByDescending(DirSeparatorCount);
             var pw = new ProgressWatcher(fileCnt);
             var delFileCnt = 0;
             var delFolderCnt = 0;

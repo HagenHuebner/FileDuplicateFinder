@@ -22,6 +22,11 @@ namespace FindDuplicates
             return false;
         }
 
+        public DuplicateSet Set() 
+        {
+            return set_;
+        }
+
         private readonly DuplicateSet set_;
     }
 }

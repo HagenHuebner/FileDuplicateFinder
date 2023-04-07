@@ -6,6 +6,11 @@ Fix
 -Batch delete not possible with only one folder
 -Batch delete deletes last file if all duplicates reside in selected folders
 
+unit test for 
+DuplicateSetsToDeleteFrom
+
+
+
 Test
 recycle again single file
 One file is locked in batch deletion

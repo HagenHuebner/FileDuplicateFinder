@@ -283,14 +283,18 @@ namespace Gui
             OnDeleteSelected();
         }
 
-        private List<DuplicateEntry> AllFileDuplicates() 
+        private List<DuplicateSet> AllDisplayedDuplicateSets() 
         {
-            var ret = new List<DuplicateEntry>();
+            var ret = new List<DuplicateSet>();
             foreach(var obj in DuplicateList.Items) 
             {
                 var dupEntry = (DuplicateEntry)obj;
-                if (dupEntry.IsFile())
-                    ret.Add(dupEntry);
+                if (!dupEntry.IsFile()) 
+                {
+                    var set = ((SetDuplicateEntry)dupEntry).Set();
+                    ret.Add(set);
+                }
+                
             }
 
             return ret;
@@ -299,7 +303,7 @@ namespace Gui
         private void BatchDelete_Click(object sender, RoutedEventArgs e) 
         {
             var delCtrl = ctrl.MkBatchDeletionController();
-            delCtrl.duplicateProvider = AllFileDuplicates;
+            delCtrl.duplicateProvider = AllDisplayedDuplicateSets;
             var batchWin = new BatchDeleteWindow(delCtrl);
             batchWin.Show();
         }
