@@ -75,8 +75,8 @@ namespace FindDuplicatesTest
         {
             EnsureEmptyDeleteDir();
             var toDel = AddDir(baseDirToBatchDeleteFrom, "toDeleteFrom");
-            var dup = AddFile(toDel, "toDelete.txt");
-            var toKeep = AddFile(toDel, "toKeep.txt"); //should be kept because of the shorter name
+            var dup = AddFile(toDel, "12345.txt");
+            var toKeep = AddFile(toDel, "1234.txt"); //should be kept because of the shorter name
             ctrl_.duplicateProvider = () => new List<DuplicateSet>() {
                 new DuplicateSet(new List<FileItem>(){ new FileItemMock(dup), new FileItemMock(toKeep) })
                 };
@@ -175,13 +175,13 @@ namespace FindDuplicatesTest
 
         }
 
-        private void TestBatchDelete(bool recursive)
+        private void TestBatchDeletionWithUnselectedFolders(bool recursive)
         {
             EnsureEmptyDeleteDir();
             var toDel = AddDir(baseDirToBatchDeleteFrom, "toDeleteFrom");
-            var toKeep = AddDir(baseDirToBatchDeleteFrom, "toKeep");
+            var unselectedFolder = AddDir(baseDirToBatchDeleteFrom, "FolderThatIsNotSelectedForDeletion");
             ctrl_.selectedPathsProvider = () => new List<string> { toDel };
-            ctrl_.allPathProvider = () => new List<string> { toKeep, toDel };
+            ctrl_.allPathProvider = () => new List<string> { unselectedFolder, toDel };
 
             var subDel1 = AddDir(toDel, "containsOnlyToDelete1");
             var subDel2 = AddDir(toDel, "containsNotToDelete");
@@ -189,6 +189,8 @@ namespace FindDuplicatesTest
             //these are all empty files, duplicate detection is not tested here, just the deletion.
             var dupInSub1 = AddFile(subDel1, "toDelete1.txt");
             var dupInSub2 = AddFile(subDel2, "toDelete2.txt");
+
+            var dupInUnselectedFolder = AddFile(unselectedFolder, "notToDelete.txt");
 
             var versionToKeep = AddFile(subDel2, "1.txt");
 
@@ -212,6 +214,8 @@ namespace FindDuplicatesTest
 
             //files are always deleted
             Assert.IsFalse(File.Exists(dupInSub1));
+            Assert.IsTrue(Directory.Exists(unselectedFolder));
+            Assert.IsTrue(File.Exists(dupInUnselectedFolder));
             Assert.IsFalse(File.Exists(dupInSub2));
             Assert.IsTrue(File.Exists(versionToKeep));
         }
@@ -219,14 +223,14 @@ namespace FindDuplicatesTest
         [TestMethod]
         public void BatchDelete() 
         {
-            TestBatchDelete(false);
+            TestBatchDeletionWithUnselectedFolders(false);
         }
 
 
         [TestMethod]
         public void BatchDeleteRecurveCleanup()
         {
-            TestBatchDelete(true);
+            TestBatchDeletionWithUnselectedFolders(true);
         }
 
 
