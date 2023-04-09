@@ -241,22 +241,6 @@ namespace FindDuplicatesTest
             Assert.AreEqual(BatchDeletionGuiController.NothingToDeleteMessage, ctrl_.CannotDeleteAllErorrMessage());
         }
 
-        [TestMethod]
-        public void DeleteNotEnabledWhenEqualSize() 
-        {
-            ctrl_.allPathProvider = () => new List<string> { "asdf" };
-            ctrl_.selectedPathsProvider = () => new List<string> { "fdsa" };
-            Assert.IsFalse(ctrl_.DeleteEnabled());
-            Assert.AreEqual(BatchDeletionGuiController.WouldDeleteAllMessage, ctrl_.CannotDeleteAllErorrMessage());
-        }
-
-        [TestMethod]
-        public void DeleteDisabledWhenOneMoreSelectedThanAll() 
-        {
-            ctrl_.allPathProvider = () => new List<string> { "asdf" };
-            ctrl_.selectedPathsProvider = () => new List<string> { "fdsa", "1234" };
-            Assert.IsFalse(ctrl_.DeleteEnabled());
-        }
 
         [TestMethod]
         public void DeleteEnableWhenFewerSelectedThanAll() 

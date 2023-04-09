@@ -14,13 +14,12 @@ namespace FindDuplicates
         public Action<StatusUpdate> statusListener = (x) => { };
         public Action onFinished = () => { };
 
-        public static string WouldDeleteAllMessage = "Deleting from all folders would delete all files.";
         public static string NothingToDeleteMessage =
             "All Paths removed nothing would be deleted. Click Cancle to close and selecte folderPaths again.";
 
         public bool DeleteEnabled()
         {
-            return AllPathCnt() > PathsToDeleteFromCnt();
+            return PathsToDeleteFromCnt() > 0;
         }
 
         public static int DirSeparatorCount(string p) 
@@ -184,10 +183,7 @@ namespace FindDuplicates
 
         public string CannotDeleteAllErorrMessage()
         {
-            var allCnt = AllPathCnt();
-            if (allCnt == PathsToDeleteFromCnt() && allCnt > 0)
-                return WouldDeleteAllMessage;
-            else if (PathsToDeleteFromCnt() == 0)
+            if (PathsToDeleteFromCnt() == 0)
                 return NothingToDeleteMessage;
             else
                 return "";
