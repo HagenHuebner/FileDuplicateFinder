@@ -35,6 +35,7 @@ namespace Gui
 
                 return ret;
             };
+
             ctrl.OnFinished = () =>
             {
                 Dispatcher.BeginInvoke(new UpdateUICallback(UpdateGUI));
@@ -45,6 +46,7 @@ namespace Gui
             };
             MinFileSizeEntry.Text = "0";
             SizeUnitSelection.SelectedIndex = 1;
+            FilePathFilterTypeSelection.SelectedIndex = 0;
             AskBeforeDeleteCheckBox.IsChecked = true;
             RecycleCheckBox.IsChecked = false;
             UpdateGUI();
@@ -140,6 +142,13 @@ namespace Gui
             UpdateButtonStates();
         }
 
+        private void FilePathFilterTypeSelection_SelectionChanged(object sender, SelectionChangedEventArgs e) 
+        {
+            ctrl.Filter.PartPartIsAtEnd = FilePathFilterTypeSelection.SelectedIndex == 0;
+            UpdateButtonStates();
+        }
+
+        
         private long FileSizeMultiplier() 
         {
             return SizeUnitSelection.SelectedIndex switch
@@ -153,12 +162,11 @@ namespace Gui
 
         private void UpdateMinFileSize() 
         {
-            long size;
-            if (!long.TryParse(MinFileSizeEntry.Text, out size)) 
+            if (!long.TryParse(MinFileSizeEntry.Text, out long size))
             {
                 ShowError("Enter a whole number for the minimul file size.");
             }
-            ctrl.minFileSize = size * FileSizeMultiplier();
+            ctrl.Filter.MinSizeBytes = size * FileSizeMultiplier();
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
@@ -222,6 +230,11 @@ namespace Gui
         private void MinFileSizeEntry_TextChanged(object sender, TextChangedEventArgs e)
         {
             UpdateMinFileSize();
+        }
+
+        private void FilePathFilter_TextChange(object sender, TextChangedEventArgs e) 
+        {
+            ctrl.Filter.PathPart = FilePathFilterText.Text;
         }
 
         private void SizeUnitSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)

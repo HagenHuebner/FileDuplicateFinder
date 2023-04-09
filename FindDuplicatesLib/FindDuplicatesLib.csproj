@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BaseDirectory.cs" />
     <Compile Include="BatchDeletionGuiControler.cs" />
+    <Compile Include="FileFilter.cs" />
     <Compile Include="FileItem.cs" />
     <Compile Include="ProgressWatcher.cs" />
     <Compile Include="SetDuplicateEntry.cs" />

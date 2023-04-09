@@ -64,7 +64,7 @@ namespace FindDuplicates
             {
                 if (stopRequested)
                     return toSearch;
-                var files = GetFiles(p);
+                var files = GetFiles(p).Where(x => Filter(x));
                 toSearch.AddRange(files.ToList());
                 if (watcher.IncrementAndCheckProgress())
                     statusUpdater(watcher.MkUpdate("Listed directory: " + p));
@@ -110,9 +110,6 @@ namespace FindDuplicates
                         + " relevant: " + relevantFileCnt, watcher.Percentage));
                 }
 
-                if (!Filter(f))
-                    continue;
-
                 ++relevantFileCnt;
                 var size = f.Size();
                 if (LengthToFile.ContainsKey(size))
@@ -128,7 +125,7 @@ namespace FindDuplicates
 
         private bool Filter(FileItem f) 
         {
-            return f.Size() >= minSize;
+            return filter.Accept(f.FullPath(), f.Size());
         }
 
         public List<DuplicateSet> Multiples()
@@ -198,7 +195,7 @@ namespace FindDuplicates
         }
 
         public Action<StatusUpdate> statusUpdater = s => { };
-        public long minSize = 0;
+        public FileFilter filter = new FileFilter();
         private readonly List<string> paths_;
         public volatile bool stopRequested = false;
     }

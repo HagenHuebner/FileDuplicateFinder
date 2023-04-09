@@ -41,7 +41,7 @@ namespace FindDuplicates
         public void Start()
         {
             currentDir_ = new BaseDirectory(PathProvider());
-            currentDir_.minSize = minFileSize;
+            currentDir_.filter = Filter;
             multiples_ = null;
 
             var task = new Task(SearchFolders);
@@ -73,7 +73,8 @@ namespace FindDuplicates
 
         private volatile BaseDirectory currentDir_;
         private volatile List<DuplicateSet> multiples_;
-        public long minFileSize = 0;
+
+        public FileFilter Filter = new FileFilter();
         public Action OnFinished;
         public Action<StatusUpdate> StatusListener;
         public Func<List<string>> PathProvider;
